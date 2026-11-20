@@ -1,11 +1,11 @@
 // O nome da cache acompanha a versão da app (VERSION em app.js). Há um teste que obriga a coincidirem.
-const CACHE = 'poupanca-v26';
+const CACHE = 'contabilidade-v26';
 const FILES = ['./', 'index.html', 'style.css', 'app.js', 'analise.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'fonts/manrope-latin-500-normal.woff2', 'fonts/manrope-latin-700-normal.woff2', 'fonts/manrope-latin-800-normal.woff2'];
 // Cada ficheiro é guardado em separado: se algum faltar no servidor, os outros ficam na mesma disponíveis offline.
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => Promise.all(FILES.map(f => c.add(new Request(f, { cache: 'reload' })).catch(() => null))))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
   // Apaga só as caches antigas DA POUPANÇA (a origem do GitHub Pages é partilhada por todos os sites do mesmo utilizador).
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('poupanca-') && k !== CACHE).map(k => caches.delete(k)))));
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('contabilidade-') && k !== CACHE).map(k => caches.delete(k)))));
   self.clients.claim();
 });
 self.addEventListener('fetch', e => {

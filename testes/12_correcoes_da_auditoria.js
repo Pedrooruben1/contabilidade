@@ -2,7 +2,7 @@
 // Cada bloco reproduz o problema encontrado na v22 e confirma que deixou de acontecer, sem mudar o resto.
 const { chromium, R, fim, vazio, novo, semear } = require('./comum.js');
 const HOJE = '2026-11-06';
-const lerDb = q => q.evaluate(() => JSON.parse(localStorage.getItem('poupanca-v2')));
+const lerDb = q => q.evaluate(() => JSON.parse(localStorage.getItem('contabilidade-v2')));
 async function pagina(b, opt = {}) { const { fuso, relogio = HOJE + 'T12:00:00', ...o } = opt; const q = await novo(b, { ...(fuso ? { timezoneId: fuso } : {}), ...o }); await q.ctx.clock.setFixedTime(new Date(relogio)); q.msgs = []; q.on('dialog', d => q.msgs.push(d.message())); return q; }
 const E = (id, date, kind, amount, accountId, extra = {}) => ({ id, date, kind, amount, accountId, destId: null, category: 'outros', note: '', goalId: null, recId: null, ...extra });
 (async () => {
@@ -55,10 +55,10 @@ const E = (id, date, kind, amount, accountId, extra = {}) => ({ id, date, kind, 
   // ---- 3) «Esqueci-me do PIN» apaga mesmo todos os dados ----
   {
     const q = await pagina(b); const d = vazio(); d.accounts.push({ id: 'a', name: 'Conta Secreta', kind: 'ordem', opening: 12345.67 }); await semear(q, d);
-    await q.evaluate(async () => { localStorage.setItem('poupanca-before-import', JSON.stringify({ accounts: [{ id: 'x', name: 'Antiga', kind: 'ordem', opening: 1 }] })); localStorage.setItem('poupanca-corrupt-1', '{partido'); localStorage.setItem('poupanca-lastacc', 'a'); localStorage.setItem('poupanca-lastbackup', '2026-10-01'); localStorage.setItem('poupanca-pin', JSON.stringify({ salt: 's', hash: await hashPin('123456', 's') })); });
+    await q.evaluate(async () => { localStorage.setItem('contabilidade-before-import', JSON.stringify({ accounts: [{ id: 'x', name: 'Antiga', kind: 'ordem', opening: 1 }] })); localStorage.setItem('contabilidade-corrupt-1', '{partido'); localStorage.setItem('contabilidade-lastacc', 'a'); localStorage.setItem('contabilidade-lastbackup', '2026-10-01'); localStorage.setItem('contabilidade-pin', JSON.stringify({ salt: 's', hash: await hashPin('123456', 's') })); });
     await q.reload(); await q.waitForSelector('#lock:not([hidden])'); await q.click('[data-act=pin-forgot]'); await q.waitForLoadState('load'); await q.waitForTimeout(500);
     const chaves = await q.evaluate(() => Object.keys(localStorage).sort());
-    R('depois de «Esqueci-me do PIN» só ficam as preferências (modo privado e boas-vindas)', chaves.every(k => ['poupanca-privacy', 'poupanca-welcome'].includes(k)), chaves.join(', '));
+    R('depois de «Esqueci-me do PIN» só ficam as preferências (modo privado e boas-vindas)', chaves.every(k => ['contabilidade-privacy', 'contabilidade-welcome'].includes(k)), chaves.join(', '));
     await q.click('[data-tab=accounts]'); await q.click('#defs'); R('as Definições abrem e já não há «Desfazer a última importação» para repor dados antigos sem PIN', (await q.isVisible('[data-act=export]')) && (await q.locator('[data-act=undo-import]').count()) === 0);
     errs.push(...q.errs); await q.ctx.close();
   }
@@ -84,7 +84,7 @@ const E = (id, date, kind, amount, accountId, extra = {}) => ({ id, date, kind, 
 
   // ---- 5) separador guardado inválido ----
   {
-    const q = await pagina(b); await semear(q, vazio()); await q.evaluate(() => localStorage.setItem('poupanca-tab', 'invest')); await q.reload(); await q.waitForTimeout(300);
+    const q = await pagina(b); await semear(q, vazio()); await q.evaluate(() => localStorage.setItem('contabilidade-tab', 'invest')); await q.reload(); await q.waitForTimeout(300);
     R('separador guardado inválido abre no Início, sem erros', (await q.evaluate(() => document.getElementById('view').innerText.length)) > 0 && (await q.textContent('#title')) === 'Poupança' && q.errs.length === 0, JSON.stringify(q.errs));
     await q.ctx.close();
   }
@@ -119,7 +119,7 @@ const E = (id, date, kind, amount, accountId, extra = {}) => ({ id, date, kind, 
   // ---- 8) hora de verão: idade da cópia de segurança ----
   {
     const q = await pagina(b, { fuso: 'Europe/Lisbon', relogio: '2026-03-30T12:00:00Z' }); const d = vazio(); d.accounts.push({ id: 'a', name: 'Banco', kind: 'ordem', opening: 100 });
-    await semear(q, d); await q.evaluate(() => localStorage.setItem('poupanca-lastbackup', '2026-02-28')); await q.reload(); await q.waitForSelector('#view *');
+    await semear(q, d); await q.evaluate(() => localStorage.setItem('contabilidade-lastbackup', '2026-02-28')); await q.reload(); await q.waitForSelector('#view *');
     await q.click('#defs'); const t = await q.evaluate(() => document.body.innerText); // v24: o estado da cópia está nas Definições
     R('com a mudança de hora pelo meio, 28/02 → 30/03 conta «há 30 dias» e mostra o aviso', /há 30 dias/.test(t) && /A última cópia foi há 30 dias/.test(t), (/[^\n]*última cópia[^\n]*/i.exec(t) || [''])[0]);
     errs.push(...q.errs); await q.ctx.close();

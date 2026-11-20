@@ -7,7 +7,7 @@ Versão **v26**: aspeto novo com a identidade bem.contado (cores, letra Manrope 
 ## Publicar no GitHub Pages
 1. Carrega para a raiz do repositório estes ficheiros: `index.html`, `app.js`, `analise.js`, `style.css`, `sw.js`, `manifest.webmanifest` e as pastas `icons` e `fonts`.
 2. Settings → Pages → Deploy from a branch → `main` / `(root)`.
-3. Abre `https://O-TEU-UTILIZADOR.github.io/poupanca/` no telemóvel.
+3. Abre `https://O-TEU-UTILIZADOR.github.io/contabilidade/` no telemóvel.
 
 ## Instalar
 - **iPhone:** abre o link no Safari → Partilhar → Adicionar ao ecrã principal.

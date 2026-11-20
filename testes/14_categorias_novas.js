@@ -15,7 +15,7 @@ const ANTIGAS = ['habitacao', 'alimentacao', 'restaurantes', 'transportes', 'com
   await semear(q, d);
   R('as categorias antigas continuam todas lá', await q.evaluate(a => a.every(k => CATS[k]), ANTIGAS));
   R('as 9 categorias novas existem com o nome certo', await q.evaluate(n => Object.entries(n).every(([k, v]) => CATS[k] && CATS[k][0] === v), NOVAS));
-  const antes = await q.evaluate(() => ({ saldos: db.accounts.map(a => balance(a)), disp: spendable(), meta: goalInfo(db.goals[0]).saved, desp: sumEntries('expense', '2026-11'), raw: JSON.parse(localStorage.getItem('poupanca-v2')) }));
+  const antes = await q.evaluate(() => ({ saldos: db.accounts.map(a => balance(a)), disp: spendable(), meta: goalInfo(db.goals[0]).saved, desp: sumEntries('expense', '2026-11'), raw: JSON.parse(localStorage.getItem('contabilidade-v2')) }));
   // mudar cada despesa antiga para uma categoria nova, pelo formulário (como o utilizador faz)
   await q.click('[data-tab=entries]'); let falhas = [];
   for (const [i, k] of Object.keys(NOVAS).entries()) {
@@ -26,7 +26,7 @@ const ANTIGAS = ['habitacao', 'alimentacao', 'restaurantes', 'transportes', 'com
     if (!tem) falhas.push(k + ': não aparece na lista');
   }
   R('mudar 9 despesas antigas para as categorias novas grava sem erro', falhas.length === 0 && q.errs.length === 0, falhas.join(' | ') + JSON.stringify(q.errs));
-  const depois = await q.evaluate(() => ({ saldos: db.accounts.map(a => balance(a)), disp: spendable(), meta: goalInfo(db.goals[0]).saved, desp: sumEntries('expense', '2026-11'), raw: JSON.parse(localStorage.getItem('poupanca-v2')) }));
+  const depois = await q.evaluate(() => ({ saldos: db.accounts.map(a => balance(a)), disp: spendable(), meta: goalInfo(db.goals[0]).saved, desp: sumEntries('expense', '2026-11'), raw: JSON.parse(localStorage.getItem('contabilidade-v2')) }));
   R('as categorias ficaram gravadas', Object.keys(NOVAS).every((k, i) => depois.raw.entries.find(e => e.id === 'e' + i).category === k));
   R('saldos, disponível, total de despesas e objetivo não mudam', JSON.stringify([antes.saldos, antes.disp, antes.desp, antes.meta]) === JSON.stringify([depois.saldos, depois.disp, depois.desp, depois.meta]), JSON.stringify([antes.disp, depois.disp]));
   const so = raw => raw.entries.map(e => JSON.stringify(Object.keys(e).filter(k => k !== 'category').sort().map(k => [k, e[k]]))).sort();
@@ -46,7 +46,7 @@ const ANTIGAS = ['habitacao', 'alimentacao', 'restaurantes', 'transportes', 'com
   await q.click('[data-tab=budgets]'); await q.click('#add'); await q.selectOption('#sheet [name=category]', 'ginasio'); await q.fill('#sheet [name=amount]', '40'); await q.click('#sheet [data-act=save]'); await q.waitForSelector('#sheet-bg', { state: 'hidden' });
   const orc = await q.textContent('#view'); R('dá para criar um orçamento numa categoria nova e conta o gasto', /Ginásio/.test(orc) && /11,35\s€ \/ 40,00\s€/.test(orc), orc.replace(/\s+/g, ' ').slice(0, 160));
   // cópia de segurança: exportar e importar mantém as categorias novas
-  const json = await q.evaluate(() => JSON.stringify(db)); await q.evaluate(() => { localStorage.setItem('poupanca-v2', JSON.stringify({ accounts: [{ id: 'x', name: 'X', kind: 'ordem', opening: 1 }], entries: [] })); }); await q.reload(); await q.waitForSelector('#view *');
+  const json = await q.evaluate(() => JSON.stringify(db)); await q.evaluate(() => { localStorage.setItem('contabilidade-v2', JSON.stringify({ accounts: [{ id: 'x', name: 'X', kind: 'ordem', opening: 1 }], entries: [] })); }); await q.reload(); await q.waitForSelector('#view *');
   await q.setInputFiles('#file', { name: 'c.json', mimeType: 'application/json', buffer: Buffer.from(json) }); await q.waitForSelector('#toast.on');
   R('exportar e importar a cópia mantém as categorias novas', await q.evaluate(n => Object.keys(n).every((k, i) => db.entries.find(e => e.id === 'e' + i).category === k), NOVAS));
   // voltar a pôr uma despesa numa categoria antiga também funciona

@@ -1,7 +1,7 @@
 'use strict';
 
 // ---------- Constantes ----------
-const KEY = 'poupanca-v2';
+const KEY = 'contabilidade-v2';
 const KINDS = { ordem: ['Conta à ordem', '🏦'], poupanca: ['Poupança', '🔒'], carteira: ['Dinheiro físico', '💵'], investimento: ['Investimento', '📈'] };
 const ENTRY = { income: 'Receita', expense: 'Despesa', transfer: 'Transferência' };
 // As chaves (habitacao, cafes, ...) são o que fica guardado nos dados: nunca se mudam nem se apagam, só se acrescentam.
@@ -23,17 +23,17 @@ function empty() { return { accounts: [], entries: [], budgets: [], goals: [], r
 let corruptRaw = null;
 let lastRaw = null; // último conteúdo lido ou gravado por esta janela
 const BACKUP_KEYS = ['accounts', 'entries', 'budgets', 'goals', 'recurring', 'invest'];
-const UNDOKEY = 'poupanca-before-import';
+const UNDOKEY = 'contabilidade-before-import';
 function quarantine(raw) {
   corruptRaw = raw;
   try {
-    localStorage.setItem('poupanca-corrupt-' + Date.now(), raw);
-    Object.keys(localStorage).filter(k => k.startsWith('poupanca-corrupt-')).sort().slice(0, -3).forEach(k => localStorage.removeItem(k)); // guarda as 3 mais recentes
+    localStorage.setItem('contabilidade-corrupt-' + Date.now(), raw);
+    Object.keys(localStorage).filter(k => k.startsWith('contabilidade-corrupt-')).sort().slice(0, -3).forEach(k => localStorage.removeItem(k)); // guarda as 3 mais recentes
   } catch (e) {}
 }
 function load() {
   let raw = null;
-  try { raw = localStorage.getItem(KEY); if (raw === null) raw = localStorage.getItem('poupanca-v1'); } catch (e) {}
+  try { raw = localStorage.getItem(KEY); if (raw === null) raw = localStorage.getItem('contabilidade-v1'); } catch (e) {}
   if (raw === null) return empty();
   try {
     const d = JSON.parse(raw);
@@ -101,7 +101,7 @@ const VERSION = 'v26';
 const fmtEur = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' });
 // Modo privado: valores escondidos; só aparecem enquanto manténs o dedo premido no olho.
 // Assim, ao sair da app (e o iOS tirar a imagem do seletor de apps) nunca há valores à vista.
-const PRIVKEY = 'poupanca-privacy';
+const PRIVKEY = 'contabilidade-privacy';
 let reveal = false;
 const privacyOn = () => { try { return localStorage.getItem(PRIVKEY) !== '0'; } catch (e) { return true; } };
 const masked = () => privacyOn() && !reveal;
@@ -211,7 +211,7 @@ function goalInfo(g) {
 }
 
 // ---------- Cópia de segurança: estado ----------
-const BKKEY = 'poupanca-lastbackup';
+const BKKEY = 'contabilidade-lastbackup';
 const lastBackup = () => { try { return localStorage.getItem(BKKEY) || ''; } catch (e) { return ''; } };
 function backupStatus() {
   const d = lastBackup();
@@ -275,7 +275,7 @@ const ARTOF = { '🏦': 'conta', '💳': 'conta', '⇄': 'movimentos', '🔍': '
 
 // ---------- Interface ----------
 const TABS = [['home', 'Início', '🏠'], ['entries', 'Movimentos', '⇄'], ['budgets', 'Orçamentos', '📊'], ['goals', 'Objetivos', '🎯'], ['accounts', 'Contas', '💳']];
-let tab = (() => { try { const t = localStorage.getItem('poupanca-tab'); return TABS.some(x => x[0] === t) ? t : 'home'; } catch (e) { return 'home'; } })();
+let tab = (() => { try { const t = localStorage.getItem('contabilidade-tab'); return TABS.some(x => x[0] === t) ? t : 'home'; } catch (e) { return 'home'; } })();
 const ui = { f: { month: '', cat: '', acc: '', q: '' }, seg: 'accounts', view: 'list', day: '' };
 const $ = id => document.getElementById(id);
 
@@ -301,7 +301,7 @@ function entryRow(e) {
 
 
 // --- Início: ajudas para quem está a começar (v26) ---
-const PASSOSKEY = 'poupanca-passos-escondidos';
+const PASSOSKEY = 'contabilidade-passos-escondidos';
 const passosEscondidos = () => { try { return localStorage.getItem(PASSOSKEY) === '1'; } catch (e) { return false; } };
 function primeirosPassos() {
   const p = [
@@ -458,7 +458,7 @@ function goals() {
 // «Juntar dinheiro»: abre um movimento de transferência já associado ao objetivo (o dinheiro muda mesmo de conta).
 function juntarObjetivo(gid) {
   if (!db.accounts.length) return toast('Adiciona primeiro uma conta.');
-  const lastId = (() => { try { return localStorage.getItem('poupanca-lastacc'); } catch (e) { return null; } })();
+  const lastId = (() => { try { return localStorage.getItem('contabilidade-lastacc'); } catch (e) { return null; } })();
   const dest = db.accounts.find(a => a.kind === 'poupanca');
   const orig = [acc(lastId), ...db.accounts].find(a => a && a.id !== dest?.id && a.kind !== 'poupanca' && a.kind !== 'investimento') || db.accounts.find(a => a.id !== dest?.id) || db.accounts[0];
   entryForm(null, 'transfer', { kind: 'transfer', accountId: orig.id, destId: dest && dest.id !== orig.id ? dest.id : '', goalId: gid, note: '' });
@@ -568,7 +568,7 @@ function parseQuick(raw) {
   else if (toAccount) kind = 'transfer'; // «100 para poupança»
   let category = 'outros';
   if (kind === 'expense') for (const [c, ks] of Object.entries(QKEYS)) if (ks.some(k => hasWord(n, k))) { category = c; break; }
-  const lastId = (() => { try { return localStorage.getItem('poupanca-lastacc'); } catch (e) { return null; } })();
+  const lastId = (() => { try { return localStorage.getItem('contabilidade-lastacc'); } catch (e) { return null; } })();
   const dflt = acc(lastId) || db.accounts.find(a => a.kind !== 'investimento') || db.accounts[0];
   let accountId = dflt.id, destId = null;
   if (kind === 'transfer') {
@@ -715,7 +715,7 @@ function saveForm() {
       const old = id ? db.entries.find(x => x.id === id) : null;
       const e = { id: id || uid(), date: val('date') || today(), note: val('note').trim(), recId: old?.recId || null, ...base };
       const aviso = avisoNegativo(e, old); if (aviso && !confirm(aviso)) return; // só avisa: quem escolhe és tu
-      if (id) db.entries[db.entries.findIndex(x => x.id === id)] = e; else { db.entries.push(e); try { localStorage.setItem('poupanca-lastacc', e.accountId); } catch (x) {} }
+      if (id) db.entries[db.entries.findIndex(x => x.id === id)] = e; else { db.entries.push(e); try { localStorage.setItem('contabilidade-lastacc', e.accountId); } catch (x) {} }
     }
   } else if (type === 'budget') {
     const limit = parseMoney(val('amount')), category = val('category');
@@ -766,7 +766,7 @@ function deleteForm() {
 // ---------- Cópia de segurança ----------
 function exportData() {
   const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
-  const f = new File([blob], `poupanca-${today()}.json`, { type: 'application/json' });
+  const f = new File([blob], `contabilidade-${today()}.json`, { type: 'application/json' });
   // Com a folha de partilha, só conta como cópia se o utilizador a concluir (cancelar rejeita a promessa).
   if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f] }).then(markBackup).catch(() => {}); return; }
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = f.name; a.click();
@@ -817,7 +817,7 @@ function corruptNotice() {
 }
 
 // ---------- Eventos ----------
-function go(t) { tab = t; try { localStorage.setItem('poupanca-tab', tab); } catch (e) {} render(); }
+function go(t) { tab = t; try { localStorage.setItem('contabilidade-tab', tab); } catch (e) {} render(); }
 document.addEventListener('click', ev => {
   const t = ev.target.closest('button, [data-goal-card]');
   if (!t) { if (ev.target.id === 'sheet-bg') closeSheet(); return; }
@@ -856,9 +856,9 @@ document.addEventListener('click', ev => {
   else if (d.act === 'welcome-close') closeSheet();
   else if (d.act === 'pin-cancel') hideLock();
   else if (d.act === 'privacy') { try { localStorage.setItem(PRIVKEY, privacyOn() ? '0' : '1'); } catch (e) {} reveal = false; render(true); refreshDefs(); }
-  else if (d.act === 'pin-forgot') { if (confirm('Esqueceste o PIN? Para entrar tens de apagar TODOS os dados deste telemóvel (só recuperas com uma cópia de segurança). Apagar?')) { Object.keys(localStorage).filter(k => k.startsWith('poupanca') && k !== PRIVKEY && k !== WELCOME_KEY).forEach(k => localStorage.removeItem(k)); location.reload(); } }
+  else if (d.act === 'pin-forgot') { if (confirm('Esqueceste o PIN? Para entrar tens de apagar TODOS os dados deste telemóvel (só recuperas com uma cópia de segurança). Apagar?')) { Object.keys(localStorage).filter(k => k.startsWith('contabilidade') && k !== PRIVKEY && k !== WELCOME_KEY).forEach(k => localStorage.removeItem(k)); location.reload(); } }
   else if (d.act === 'export') exportData();
-  else if (d.act === 'export-corrupt') saveText(`poupanca-danificado-${today()}.json`, corruptRaw || '');
+  else if (d.act === 'export-corrupt') saveText(`contabilidade-danificado-${today()}.json`, corruptRaw || '');
   else if (d.act === 'undo-import') undoImport();
   else if (d.act === 'import') $('file').click();
 });
@@ -905,7 +905,7 @@ document.addEventListener('visibilitychange', () => {
 
 
 // ---------- Boas-vindas ----------
-const WELCOME_KEY = 'poupanca-welcome';
+const WELCOME_KEY = 'contabilidade-welcome';
 function welcome() {
   const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
   const ua = navigator.userAgent;
@@ -924,7 +924,7 @@ function welcome() {
 const needsWelcome = () => { try { return corruptRaw === null && !localStorage.getItem(WELCOME_KEY) && !db.accounts.length && !db.entries.length; } catch (e) { return false; } };
 
 // ---------- PIN ----------
-const PINKEY = 'poupanca-pin', LOCKKEY = 'poupanca-lockuntil', PINLEN = 6;
+const PINKEY = 'contabilidade-pin', LOCKKEY = 'contabilidade-lockuntil', PINLEN = 6;
 function getPin() { try { return JSON.parse(localStorage.getItem(PINKEY)); } catch (e) { return null; } }
 async function hashPin(pin, salt) {
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);

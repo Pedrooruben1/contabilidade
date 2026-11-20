@@ -7,7 +7,7 @@ const { chromium, R, fim, novo, semear, igual } = require('./comum');
     budgets: [{ id: 'b1', category: 'alimentacao', limit: 40 }, { id: 'b2', category: 'restaurantes', limit: 15 }], goals: [{ id: 'g', name: 'Viagem Japão', target: 3000, saved: 610, deadline: '2027-11-06', created: '2026-05-01', base: 610 }],
     recurring: [{ id: 'r1', name: 'Ginásio', kind: 'expense', amount: 30, accountId: 'B', destId: null, category: 'desporto', freq: 'monthly', next: '2026-11-16', day: 16, active: true }], invest: [{ id: 'd1', name: 'Crédito do carro', type: 'divida', invested: 0, current: 5000 }, { id: 'i1', name: 'ETF', type: 'etf', invested: 1000, current: 1150.5 }] }));
   const mk = async (db, opt = {}) => { const q = await novo(b, opt); await q.ctx.clock.setFixedTime(new Date('2026-11-06T12:00:00')); await semear(q, db); todos.push(q); q.dlg = []; q.dlgResp = true; q.removeAllListeners('dialog'); q.on('dialog', d => { q.dlg.push(d.message()); q.dlgResp ? d.accept() : d.dismiss(); }); return q; };
-  const st = (q, k) => q.evaluate(k => JSON.parse(localStorage.getItem('poupanca-v2'))[k], k);
+  const st = (q, k) => q.evaluate(k => JSON.parse(localStorage.getItem('contabilidade-v2'))[k], k);
   const editarObjetivo = async (q, campos) => { await q.click('[data-tab=goals]'); await q.click('[data-edit-goal="g"]'); for (const [n, v] of Object.entries(campos)) await q.fill(`[name=${n}]`, v); await q.click('[data-act=save]'); };
 
   // 1) O objetivo NÃO perde dinheiro ao baixar (e voltar a subir) o valor pretendido

@@ -11,16 +11,16 @@ const crypto = require('crypto'); const sha = s => crypto.createHash('sha256').u
   // 1) usar a Análise intensivamente não altera os dados nem grava nada
   let q = await mk(dados);
   await q.evaluate(() => { window.__w = []; const o = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { window.__w.push(k); return o.call(this, k, v); }; });
-  const antes = await q.evaluate(() => ({ raw: localStorage.getItem('poupanca-v2'), db: JSON.stringify(db) }));
+  const antes = await q.evaluate(() => ({ raw: localStorage.getItem('contabilidade-v2'), db: JSON.stringify(db) }));
   await q.click('[data-tab=entries]'); await q.click('[data-view=analysis]');
   for (const m of ['day', 'week', 'month', 'year']) { await q.click(`[data-an="mode:${m}"]`); for (let i = 0; i < 3; i++) await q.click('[data-an=prev]'); await q.click('[data-an=today]'); }
   await q.click('[data-an=accs]'); await q.check('[data-an-acc="a0"]'); await q.check('[data-an-acc="a1"]'); await q.click('[data-act=cancel]'); await q.click('[data-an=cats]'); await q.check('[data-an-cat="lazer"]'); await q.click('[data-act=cancel]');
   await q.evaluate(() => { for (let i = 0; i < 40; i++) { AN.sel = { start: anAddDays(AN.anchor, -i), end: anAddDays(AN.anchor, -i) }; render(true); } AN.selCat = 'lazer'; render(true); });
   await q.click('.an-cat').catch(() => {}); await q.click('[data-an=clear]'); await q.click('[data-view=list]'); await q.click('[data-view=analysis]');
-  const depois = await q.evaluate(() => ({ raw: localStorage.getItem('poupanca-v2'), db: JSON.stringify(db), writes: window.__w }));
+  const depois = await q.evaluate(() => ({ raw: localStorage.getItem('contabilidade-v2'), db: JSON.stringify(db), writes: window.__w }));
   R('após uma sessão intensa de análise, os dados guardados são idênticos, byte a byte', depois.raw === antes.raw, `(${sha(antes.raw)} = ${sha(depois.raw)})`);
   R('a base de dados em memória também fica igual', depois.db === antes.db);
-  R('a Análise nunca gravou os dados (nenhuma escrita em poupanca-v2)', !depois.writes.includes('poupanca-v2'), JSON.stringify([...new Set(depois.writes)]));
+  R('a Análise nunca gravou os dados (nenhuma escrita em poupanca-v2)', !depois.writes.includes('contabilidade-v2'), JSON.stringify([...new Set(depois.writes)]));
   const exp1 = await q.evaluate(() => { const o = db; return JSON.stringify(Object.keys(o)); }); R('formato das cópias de segurança inalterado (as mesmas 6 listas)', exp1 === JSON.stringify(['accounts', 'entries', 'budgets', 'goals', 'recurring', 'invest']), exp1);
   R('contas, movimentos, orçamentos, objetivos e recorrentes mantêm-se', await q.evaluate(([n, e]) => db.accounts.length === n && db.entries.length === e && db.budgets.length === 1 && db.goals.length === 1 && db.recurring.length === 1, [dados.accounts.length, dados.entries.length]));
   // cópia de segurança antes e depois: exportar e importar devolve os mesmos dados
@@ -30,8 +30,8 @@ const crypto = require('crypto'); const sha = s => crypto.createHash('sha256').u
   R('a versão aparece em Contas', (await q.textContent('#view')).includes('Poupança ' + require('fs').readFileSync(require('path').join(__dirname, '..', 'app.js'), 'utf8').match(/const VERSION = '(v\d+)'/)[1]));
   // dados de uma cópia da versão anterior (sem nada da análise) abrem e analisam-se sem alterações
   const velha = { accounts: dados.accounts, entries: dados.entries, budgets: [], goals: [], recurring: [], invest: [] };
-  q = await mk(velha); const r0 = await q.evaluate(() => localStorage.getItem('poupanca-v2')); await q.click('[data-act=open-analysis]'); await q.waitForSelector('.an-grid');
-  R('dados da versão anterior: a Análise abre e não altera a cópia guardada', (await q.evaluate(() => localStorage.getItem('poupanca-v2'))) === r0);
+  q = await mk(velha); const r0 = await q.evaluate(() => localStorage.getItem('contabilidade-v2')); await q.click('[data-act=open-analysis]'); await q.waitForSelector('.an-grid');
+  R('dados da versão anterior: a Análise abre e não altera a cópia guardada', (await q.evaluate(() => localStorage.getItem('contabilidade-v2'))) === r0);
 
   // 2) offline: depois da primeira visita, a Análise funciona sem rede
   const o = await novo(b); await o.ctx.clock.setFixedTime(new Date('2026-11-06T12:00:00')); await semear(o, dados); todos.push(o);
@@ -46,7 +46,7 @@ const crypto = require('crypto'); const sha = s => crypto.createHash('sha256').u
 
   // 3) se o servidor não tiver o analise.js, o resto da app continua disponível offline e nunca guarda erros 404
   const c2 = await b.newContext({ viewport: { width: 390, height: 844 } }); await c2.route('**/analise.js', r => r.fulfill({ status: 404, body: 'não existe' })); const p2 = await c2.newPage(); p2.errs = []; p2.on('pageerror', e => p2.errs.push(e.message));
-  await p2.goto(process.env.APP || 'http://localhost:8780/index.html'); await p2.evaluate(() => { localStorage.setItem('poupanca-welcome', '1'); localStorage.setItem('poupanca-privacy', '0'); }); await p2.reload(); await p2.evaluate(() => navigator.serviceWorker.ready); await p2.waitForTimeout(800);
+  await p2.goto(process.env.APP || 'http://localhost:8780/index.html'); await p2.evaluate(() => { localStorage.setItem('contabilidade-welcome', '1'); localStorage.setItem('contabilidade-privacy', '0'); }); await p2.reload(); await p2.evaluate(() => navigator.serviceWorker.ready); await p2.waitForTimeout(800);
   const cache2 = await p2.evaluate(async () => { const k = await caches.keys(); const c = await caches.open(k[0]); const out = {}; for (const r of await c.keys()) { const res = await c.match(r); out[new URL(r.url).pathname.split('/').pop() || './'] = res.status; } return out; });
   R('analise.js em falta: o service worker instala-se na mesma e guarda os restantes ficheiros', cache2['app.js'] === 200 && cache2['index.html'] === 200 && cache2['style.css'] === 200, JSON.stringify(cache2));
   R('analise.js em falta: nenhum erro 404 fica guardado na cache', !Object.values(cache2).includes(404));
