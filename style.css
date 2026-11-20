@@ -344,3 +344,21 @@ h2.mhead .pos{color:var(--green)}
 .dia.fut{opacity:1;border-style:dashed}
 .dia.fut b{font-weight:600}
 #sheet .wart+h2{text-align:center}
+
+/* ---- v27: desafio do dia, resumo do mês, modelos de objetivo, faturas ---- */
+.dtag{display:inline-block;background:var(--ambar);color:var(--azul);font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:999px;transform:rotate(-2deg);margin:-2px 0 8px -2px}
+.desafio .dtxt{display:flex;gap:12px;align-items:flex-start}
+.desafio .dico{font-size:30px;line-height:1;flex:none;margin-top:2px}
+.desafio p{margin:0;font-size:17px;font-weight:700;line-height:1.35}
+.desafio .dfoot{margin-top:12px;align-items:center}
+.desafio .dbtn{flex:none;padding:8px 18px}
+.desafio.feito p{text-decoration:line-through;text-decoration-color:var(--ambar);text-decoration-thickness:3px}
+.resumo h3{margin:0 0 10px;font-size:20px;font-weight:800}
+.resumo .rline{margin:6px 0 0;font-size:15px}
+.tpls{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 4px}
+.tpl{min-height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;font-size:14px;font-weight:600}
+.tpl.on{border:2px solid var(--ambar);background:color-mix(in srgb,var(--ambar) 18%,var(--card))}
+.tplnote{margin:6px 4px 0}
+label.chk.fat{border-bottom:0;margin:10px 4px 0;color:var(--text);font-size:15px}
+.nif{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.04em;padding:1px 6px;border-radius:6px;background:color-mix(in srgb,var(--ambar) 30%,transparent);color:var(--text)}
+.card .btn:not(.main),.resumo .btn{background:var(--bg)}

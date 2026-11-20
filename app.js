@@ -82,7 +82,7 @@ function normalize(d) {
   const pick = (v, table, dflt) => (own(table, v) ? v : dflt);
   return {
     accounts: objs(d.accounts).map(a => ({ id: id(a.id), name: str(a.name, 'Conta'), kind: pick(kindMap[a.kind] || a.kind, KINDS, 'ordem'), opening: num0(a.opening ?? a.openingBalance) })),
-    entries: objs(d.entries).map(e => ({ id: id(e.id), date: date(e.date), kind: pick(own(entryMap, e.kind) ? entryMap[e.kind] : e.kind, ENTRY, 'expense'), amount: Math.abs(num0(e.amount)), accountId: sid(e.accountId ?? e.accountID), destId: sid(e.destId ?? e.destinationID), category: cat(e.category), note: str(e.note, ''), goalId: sid(e.goalId), recId: sid(e.recId) })),
+    entries: objs(d.entries).map(e => ({ id: id(e.id), date: date(e.date), kind: pick(own(entryMap, e.kind) ? entryMap[e.kind] : e.kind, ENTRY, 'expense'), amount: Math.abs(num0(e.amount)), accountId: sid(e.accountId ?? e.accountID), destId: sid(e.destId ?? e.destinationID), category: cat(e.category), note: str(e.note, ''), goalId: sid(e.goalId), recId: sid(e.recId), ...(e.fatura === true ? { fatura: true } : {}) })),
     budgets: objs(d.budgets).map(b => ({ id: id(b.id), category: cat(b.category), limit: Math.abs(num0(b.limit ?? b.monthlyLimit)) })),
     goals: objs(d.goals).map(g => ({ id: id(g.id), name: str(g.name, 'Objetivo'), target: Math.abs(num0(g.target)), saved: Math.abs(num0(g.saved)), deadline: dateOk(g.deadline), created: dateOk(g.created) || t, base: Math.abs(num0(g.base ?? g.saved)) })),
     recurring: objs(d.recurring).map(r => { const next = dateOk(r.next) || t; return { id: id(r.id), name: str(r.name, 'Recorrente'), kind: pick(r.kind, ENTRY, 'expense'), amount: Math.abs(num0(r.amount)), accountId: sid(r.accountId), destId: sid(r.destId), category: cat(r.category), goalId: sid(r.goalId), freq: pick(r.freq, FREQ, 'monthly'), next, day: Math.min(Math.max(Math.round(num0(r.day)) || +next.slice(8, 10), 1), 31), active: r.active !== false }; }),
@@ -97,7 +97,7 @@ const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const cents = x => Math.round(x * 100);
 // As mesmas regras que a app aplica ao abrir os dados (normalize): só datas reais entre 1900 e 2200.
 const dataValida = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); if (!m) return false; const y = +m[1], mo = +m[2], d = +m[3]; return y >= 1900 && y <= 2200 && mo >= 1 && mo <= 12 && d >= 1 && d <= new Date(Date.UTC(y, mo, 0)).getUTCDate(); };
-const VERSION = 'v26';
+const VERSION = 'v27';
 const fmtEur = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' });
 // Modo privado: valores escondidos; só aparecem enquanto manténs o dedo premido no olho.
 // Assim, ao sair da app (e o iOS tirar a imagem do seletor de apps) nunca há valores à vista.
@@ -296,7 +296,7 @@ function entryRow(e) {
   const a = acc(e.accountId), d = acc(e.destId);
   const where = e.kind === 'transfer' ? `${esc(a?.name || '?')} → ${esc(d?.name || '?')}` : esc(a?.name || '');
   const sg = e.kind === 'expense' ? '-' : e.kind === 'income' ? '+' : '';
-  return `<button class="item" data-edit-entry="${e.id}"><div class="ico">${ico}</div><div class="grow"><div>${esc(name)}${e.recId ? ' 🔁' : ''}</div><div class="sub">${fmtDate(e.date)}${e.date > today() ? ' · agendado' : ''} · ${where}</div></div><div class="amt ${e.kind === 'income' ? 'pos' : ''}">${sg}${eur(e.amount)}</div></button>`;
+  return `<button class="item" data-edit-entry="${e.id}"><div class="ico">${ico}</div><div class="grow"><div>${esc(name)}${e.recId ? ' 🔁' : ''}</div><div class="sub">${fmtDate(e.date)}${e.date > today() ? ' · agendado' : ''} · ${where}${e.fatura ? ' · <span class="nif">NIF</span>' : ''}</div></div><div class="amt ${e.kind === 'income' ? 'pos' : ''}">${sg}${eur(e.amount)}</div></button>`;
 }
 
 
@@ -341,6 +341,65 @@ function semana() {
   <div class="sub dsel">${nome.charAt(0).toUpperCase() + nome.slice(1)}: ${sel > t ? 'ainda não chegou.' : ls.length ? `${eur(v)} em ${ls.length} despesa${ls.length > 1 ? 's' : ''}.` : 'sem despesas.'}</div></section>`;
 }
 
+// --- v27: objetivos prontos, resumo do mês, desafio do dia, faturas para o IRS e exportar para Excel ---
+const MODELOS = [['🛟', 'Fundo para imprevistos'], ['🏖️', 'Férias'], ['🎄', 'Natal e presentes'], ['🚗', 'Carta de condução'], ['📱', 'Telemóvel novo'], ['💻', 'Computador'], ['🏠', 'Entrada para casa'], ['🚙', 'Carro'], ['💍', 'Casamento'], ['🎓', 'Estudos e formação'], ['👶', 'Bebé'], ['🐾', 'Animal de estimação']];
+// Desafio do dia: o mesmo para toda a gente no mesmo dia; com mais de 365 desafios, não se repete durante mais de um ano.
+const DESKEY = 'contabilidade-desafios', DESOFF = 'contabilidade-desafios-off';
+const desafiosOn = () => { try { return localStorage.getItem(DESOFF) !== '1'; } catch (e) { return true; } };
+const desFeitos = () => { try { const o = JSON.parse(localStorage.getItem(DESKEY) || '{}'); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; } catch (e) { return {}; } };
+const diaN = s => Math.round(Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10)) / 864e5);
+const desafioDe = s => { const L = typeof DESAFIOS !== 'undefined' && DESAFIOS.length ? DESAFIOS : null; return L ? L[((diaN(s) % L.length) + L.length) % L.length] : null; };
+function desafioSeguidos(f) { let n = 0, d = parseD(today()); if (!f[ymd(d)]) d.setDate(d.getDate() - 1); while (f[ymd(d)] && n < 5000) { n++; d.setDate(d.getDate() - 1); } return n; }
+function desafio() {
+  const t = today(), d = desafioDe(t); if (!d || !desafiosOn()) return '';
+  const f = desFeitos(), feito = !!f[t], tot = Object.keys(f).length, seg = desafioSeguidos(f);
+  return `<section class="card desafio${feito ? ' feito' : ''}" aria-label="Desafio de hoje"><span class="dtag">Desafio de hoje</span>
+  <div class="dtxt"><span class="dico" aria-hidden="true">${d[0]}</span><p>${esc(d[1])}</p></div>
+  <div class="between dfoot"><span class="sub">${tot ? `${tot} cumprido${tot > 1 ? 's' : ''}${seg > 1 ? ` · ${seg} dias seguidos` : ''}` : 'Amanhã há outro.'}</span>
+  ${feito ? '<button class="btn dbtn" data-act="desafio-desfazer" aria-label="Desmarcar o desafio de hoje">✓ Feito</button>' : '<button class="btn main dbtn" data-act="desafio-feito">Feito</button>'}</div></section>`;
+}
+function marcarDesafio(on) { const f = desFeitos(), t = today(); if (on) f[t] = 1; else delete f[t]; try { localStorage.setItem(DESKEY, JSON.stringify(f)); } catch (e) {} if (on) toast('Boa! Amanhã há um desafio novo.'); render(true); }
+// Resumo do mês anterior: aparece nos primeiros 10 dias do mês, até ser fechado.
+const RESKEY = 'contabilidade-resumo-fechado';
+function resumoMes() {
+  const ym = curMonth(), mp = addMonthKey(ym, -1);
+  if (+today().slice(8, 10) > 10 || !db.entries.some(e => e.date.startsWith(mp))) return '';
+  try { if (localStorage.getItem(RESKEY) === mp) return ''; } catch (e) {}
+  const inc = sumEntries('income', mp), exp = sumEntries('expense', mp), saldo = inc - exp;
+  const top = Object.keys(CATS).map(c => [c, sumEntries('expense', mp, c)]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1])[0];
+  const orc = db.budgets.map(b => sumEntries('expense', mp, b.category) <= b.limit), ok = orc.filter(Boolean).length;
+  return `<section class="card resumo" aria-label="Resumo de ${monthName(mp, true)}"><span class="dtag">Resumo do mês</span><h3>${monthName(mp, true).replace(/^./, c => c.toUpperCase())}</h3>
+  <div class="mgrid"><div><small class="lbl">Entrou</small><b>${eur(inc)}</b></div><div><small class="lbl">Saiu</small><b>${eur(exp)}</b></div></div>
+  <p class="rline">${saldo >= 0 ? `Sobraram <strong>${eur(saldo)}</strong>.` : `Gastaste mais <strong>${eur(-saldo)}</strong> do que recebeste.`}</p>
+  ${top ? `<p class="rline">Onde gastaste mais: ${CATS[top[0]][1]} ${CATS[top[0]][0]} (${eur(top[1])}).</p>` : ''}
+  ${orc.length ? `<p class="rline">Orçamentos cumpridos: ${ok} de ${orc.length}.</p>` : ''}
+  <div class="btns" style="margin-top:10px"><button class="btn" data-act="resumo-analise">Ver na Análise</button><button class="btn" data-act="resumo-fechar">Fechar</button></div></section>`;
+}
+// Faturas marcadas «pedi fatura com NIF», por ano e categoria (só organiza; não calcula deduções).
+let fatAno = 0;
+function faturasForm() {
+  form = { type: 'faturas' }; const y = fatAno || +today().slice(0, 4);
+  const ls = db.entries.filter(e => e.kind === 'expense' && e.fatura && e.date.startsWith(String(y)) && e.date <= today());
+  const por = {}; ls.forEach(e => { (por[e.category] = por[e.category] || [0, 0])[0]++; por[e.category][1] += cents(e.amount); });
+  const rows = Object.entries(por).sort((a, b) => b[1][1] - a[1][1]);
+  const sem = db.entries.filter(e => e.kind === 'expense' && !e.fatura && e.date.startsWith(String(y)) && e.date <= today()).length;
+  openSheet(`<h2>Faturas para o IRS</h2><div class="an-nav"><button data-act="fat-ano" data-d="-1" aria-label="Ano anterior">‹</button><span class="lbl">${y}</span><button data-act="fat-ano" data-d="1" aria-label="Ano seguinte" ${y >= +today().slice(0, 4) ? 'disabled' : ''}>›</button></div>
+  <p class="sub" style="margin:0 4px 10px">Despesas em que marcaste «Pedi fatura com NIF». Serve para confirmares no e-fatura, no Portal das Finanças, se as faturas aparecem com o teu NIF.</p>
+  ${rows.length ? `<div class="list">${rows.map(([c, [n, v]]) => `<div class="item"><div class="ico">${CATS[c][1]}</div><div class="grow"><div>${CATS[c][0]}</div><div class="sub">${n} fatura${n > 1 ? 's' : ''}</div></div><div class="amt">${eur(v / 100)}</div></div>`).join('')}</div>
+  <div class="card between"><b>Total marcado</b><b>${eur(ls.reduce((s, e) => s + cents(e.amount), 0) / 100)}</b></div>` : emptyBox('🧾', `Ainda não marcaste nenhuma despesa de ${y}. Ao registar uma despesa, marca «Pedi fatura com NIF».`)}
+  ${sem ? `<p class="note">Há ${sem} despesa${sem > 1 ? 's' : ''} de ${y} sem marca. Abre uma despesa para a marcar.</p>` : ''}
+  <div class="actionbar"><div class="btns"><button class="btn main" data-act="cancel">Fechar</button></div></div>`);
+}
+// Exportar para Excel: CSV com ponto e vírgula, vírgula decimal e BOM (o Excel em português abre-o bem).
+function exportCsv() {
+  const cel = v => { let t = String(v ?? ''); if (/^[=+\-@\t\r]/.test(t)) t = "'" + t; return /[;"\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+  const linhas = [['Data', 'Tipo', 'Categoria', 'Descrição', 'Conta', 'Conta de destino', 'Valor (€)', 'Fatura com NIF'].join(';')];
+  byDate(db.entries).slice().reverse().forEach(e => linhas.push([e.date, ENTRY[e.kind], e.kind === 'expense' ? CATS[e.category]?.[0] || '' : '', cel(e.note), cel(acc(e.accountId)?.name || ''), cel(e.kind === 'transfer' ? acc(e.destId)?.name || '' : ''), (e.kind === 'expense' ? '-' : '') + e.amount.toFixed(2).replace('.', ','), e.fatura ? 'Sim' : ''].join(';')));
+  const name = `contabilidade-movimentos-${today()}.csv`, f = new File(['﻿' + linhas.join('\r\n')], name, { type: 'text/csv' });
+  if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f] }).catch(() => {}); return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
 function home() {
   const ym = curMonth(), prev = addMonthKey(ym, -1);
   const inc = sumEntries('income', ym), exp = sumEntries('expense', ym), day0 = +today().slice(8, 10), pInc = sumEntries('income', prev, null, day0), pExp = sumEntries('expense', prev, null, day0);
@@ -368,7 +427,9 @@ function home() {
   return `<div class="hero"><small>DISPONÍVEL PARA GASTAR</small><b>${eur(spendable())}</b><div>Poupança: <strong>${eur(savingsTotal())}</strong> · Património líquido: <strong>${eur(netWorth())}</strong></div>${db.accounts.length && porDia !== null ? `<span class="tag">Até ${eur(porDia)} por dia até ao fim do mês</span>` : ''}</div>
   ${al.map(([t, m]) => `<div class="alert ${t}">${m}</div>`).join('')}
   ${primeirosPassos()}
+  ${resumoMes()}
   ${db.accounts.length ? `<div class="card qa"><div class="qarow"><input id="qa" aria-label="Registo rápido" placeholder="Registo rápido: 12,50 café" enterkeyhint="done" autocomplete="off"><button class="btn main" data-act="qa">Registar</button></div><div class="sub" style="margin-top:6px">Ex.: «gastei 30 no supermercado», «recebi 1500 salário». Confirmas antes de guardar.</div></div>` : ''}
+  ${desafio()}
   ${db.accounts.length ? semana() : ''}
   <div class="card mes"><div class="mgrid">
     <div><small class="lbl"><span class="pos" aria-hidden="true">↙</span> Receitas de ${monthName(ym)}</small><b>${eur(inc)}</b>${delta(inc, pInc, true)}</div>
@@ -486,6 +547,8 @@ function settingsForm() {
   <h3 class="dh">Segurança</h3><div class="card"><div class="between" style="margin-bottom:10px"><div><b>Modo privado</b><div class="sub">Esconde os valores (••••). Mantém o dedo premido no 👁️ para os ver; ao largares, escondem-se logo.</div></div><button class="btn ${privacyOn() ? 'main' : ''}" data-act="privacy" style="flex:none;padding:8px 14px">${privacyOn() ? 'Ligado' : 'Desligado'}</button></div>
   <div style="border-top:1px solid var(--line);padding-top:10px"></div><p class="sub" style="margin-top:0">${getPin() ? '🔒 PIN ativo. A app bloqueia ao abrir e depois de 30 segundos fora dela.' : 'Protege a app com um PIN de 6 dígitos. É um bloqueio de ecrã: impede que outra pessoa abra a app no teu telemóvel.'}</p>
   <div class="btns" style="margin-top:8px">${getPin() ? '<button class="btn" data-act="pin-change">Alterar PIN</button><button class="btn del" data-act="pin-remove">Remover PIN</button>' : '<button class="btn main" data-act="pin-set">Definir PIN</button>'}</div></div>
+  <h3 class="dh">Faturas e Excel</h3><div class="card"><button class="btn" data-act="faturas" style="width:100%">🧾 Faturas para o IRS</button><button class="btn" data-act="export-csv" style="width:100%;margin-top:8px">Exportar movimentos para Excel (CSV)</button><p class="sub" style="margin:8px 0 0">O ficheiro do Excel serve para consultar. Para guardar os dados, usa a cópia de segurança.</p></div>
+  <h3 class="dh">Desafio do dia</h3><div class="card"><div class="between"><div><b>Desafio do dia</b><div class="sub">Uma pequena ação por dia no Início. Muda todos os dias.</div></div><button class="btn ${desafiosOn() ? 'main' : ''}" data-act="desafios-toggle" style="flex:none;padding:8px 14px">${desafiosOn() ? 'Ligado' : 'Desligado'}</button></div></div>
   <h3 class="dh">Ajuda</h3><div class="card"><button class="btn" data-act="welcome" style="width:100%">Ver as boas-vindas e as dicas</button></div>
   <div class="actionbar"><div class="btns"><button class="btn main" data-act="cancel">Fechar</button></div></div>`);
 }
@@ -638,7 +701,7 @@ function entryFields(e, k, withRec) {
   <label>Valor em €</label><input name="amount" inputmode="decimal" value="${e && e.amount != null ? num(e.amount) : ''}">
   <label>Conta</label><select name="account">${accOpts(e?.accountId || db.accounts[0]?.id)}</select>
   <div id="dest"><label>Conta de destino</label><select name="dest">${accOpts(e?.destId, true)}</select></div>
-  <div id="cat"><label>Categoria</label><select name="category">${opts(CATS, e?.category || 'outros')}</select></div>
+  <div id="cat"><label>Categoria</label><select name="category">${opts(CATS, e?.category || 'outros')}</select>${withRec ? '' : `<label class="chk fat"><input type="checkbox" name="fatura"${e?.fatura ? ' checked' : ''}><span class="nm">Pedi fatura com NIF (para o IRS)</span></label>`}</div>
   ${db.goals.length ? `<div id="goal"><label id="goallabel">Juntar a um objetivo (opcional)</label><select name="goal">${goalOpts(e?.goalId)}</select></div>` : ''}
   ${withRec ? '' : `<label>Descrição / notas (opcional)</label><input name="note" value="${e ? esc(e.note || '') : ''}">`}
   <label>${withRec ? 'Primeira data' : 'Data'}</label><input name="date" type="date" min="1900-01-01" max="2200-12-31" value="${e?.date || e?.next || today()}">`;
@@ -655,7 +718,8 @@ function budgetForm(id) {
 }
 function goalForm(id) {
   const g = id ? db.goals.find(x => x.id === id) : null; form = { type: 'goal', id };
-  openSheet(`<h2>${g ? 'Editar objetivo' : 'Novo objetivo'}</h2><label>Objetivo</label><input name="name" placeholder="ex.: Viagem" value="${g ? esc(g.name) : ''}">
+  const mp = addMonthKey(curMonth(), -1), despMp = sumEntries('expense', mp);
+  openSheet(`<h2>${g ? 'Editar objetivo' : 'Novo objetivo'}</h2>${g ? '' : `<p class="sub" style="margin:0 4px 6px">Escolhe um modelo ou escreve o teu.</p><div class="tpls" role="group" aria-label="Modelos de objetivo">${MODELOS.map(([i, n]) => `<button type="button" class="tpl" data-tpl="${esc(n)}"><span aria-hidden="true">${i}</span> ${n}</button>`).join('')}</div>${despMp ? `<p class="note tplnote">As tuas despesas em ${monthName(mp, true)} foram ${eur(despMp)}. Pode ajudar a escolher o valor de um fundo para imprevistos.</p>` : ''}`}<label>Objetivo</label><input name="name" placeholder="ex.: Viagem" value="${g ? esc(g.name) : ''}">
   <label>Valor pretendido em €</label><input name="target" inputmode="decimal" value="${g ? num(g.target) : ''}">
   <label>Já tenho poupado (à mão) em €</label><input name="saved" inputmode="decimal" placeholder="0" value="${g ? num(g.saved) : ''}">
   ${g && goalInfo(g).contrib ? `<p class="note" style="margin:4px 4px 0">Além deste valor, há <b>${goalInfo(g).contrib < 0 ? '-' : '+'}${eur(Math.abs(goalInfo(g).contrib))}</b> de movimentos associados ao objetivo (por isso o cartão mostra ${eur(goalInfo(g).saved)}). Aqui só editas o que poupaste à mão.</p>` : ''}
@@ -713,7 +777,7 @@ function saveForm() {
       applyRecurring();
     } else {
       const old = id ? db.entries.find(x => x.id === id) : null;
-      const e = { id: id || uid(), date: val('date') || today(), note: val('note').trim(), recId: old?.recId || null, ...base };
+      const e = { id: id || uid(), date: val('date') || today(), note: val('note').trim(), recId: old?.recId || null, ...base, ...(kind === 'expense' && $('sheet').querySelector('[name=fatura]')?.checked ? { fatura: true } : {}) };
       const aviso = avisoNegativo(e, old); if (aviso && !confirm(aviso)) return; // só avisa: quem escolhe és tu
       if (id) db.entries[db.entries.findIndex(x => x.id === id)] = e; else { db.entries.push(e); try { localStorage.setItem('contabilidade-lastacc', e.accountId); } catch (x) {} }
     }
@@ -851,6 +915,15 @@ document.addEventListener('click', ev => {
   else if (d.act === 'qa') quickAdd();
   else if (d.day) { ui.day = d.day; render(true); }
   else if (d.passo) abrirPasso(d.passo);
+  else if (d.tpl) { const n = $('sheet').querySelector('[name=name]'); n.value = d.tpl; document.querySelectorAll('.tpl').forEach(b => b.classList.toggle('on', b === t)); $('sheet').querySelector('[name=target]').focus(); }
+  else if (d.act === 'desafio-feito') marcarDesafio(true);
+  else if (d.act === 'desafio-desfazer') marcarDesafio(false);
+  else if (d.act === 'desafios-toggle') { try { localStorage.setItem(DESOFF, desafiosOn() ? '1' : '0'); } catch (e) {} render(true); refreshDefs(); }
+  else if (d.act === 'resumo-fechar') { try { localStorage.setItem(RESKEY, addMonthKey(curMonth(), -1)); } catch (e) {} render(true); }
+  else if (d.act === 'resumo-analise') { try { localStorage.setItem(RESKEY, addMonthKey(curMonth(), -1)); } catch (e) {} ui.view = 'analysis'; go('entries'); }
+  else if (d.act === 'faturas') faturasForm();
+  else if (d.act === 'fat-ano') { fatAno = (fatAno || +today().slice(0, 4)) + +d.d; faturasForm(); }
+  else if (d.act === 'export-csv') exportCsv();
   else if (d.act === 'passos-esconder') { try { localStorage.setItem(PASSOSKEY, '1'); } catch (e) {} render(true); }
   else if (d.act === 'welcome') welcome();
   else if (d.act === 'welcome-close') closeSheet();
