@@ -1,0 +1,602 @@
+=== testes/01_oraculo.js
+16 conjuntos de dados, 2880 cenários
+OK   aleatorio-1: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   aleatorio-2: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   aleatorio-3: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   aleatorio-4: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   aleatorio-5: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   aleatorio-6: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   aleatorio-7: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   aleatorio-8: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   primeiro-movimento-tardio: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   conta-sem-movimentos: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   dados-recentes: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   decimais: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   saldos-negativos: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   bissexto-2024: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   hoje-2025-12-31: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+OK   hoje-2026-01-01: 180 cenários iguais ao cálculo independente (cêntimo a cêntimo)
+   (2880 cenários no total | 818 com saldos estimados | 2181 com saldos negativos | 152 em períodos futuros)
+OK   há cenários com saldos estimados, negativos e futuros (a cobertura é real)
+OK   referência de controlo: sem alterações não há diferenças
+OK   teste do teste: +1 cêntimo no saldo inicial é detetado
+OK   teste do teste: -1 cêntimo num ponto do gráfico é detetado
+OK   teste do teste: +1 cêntimo numa categoria é detetado
+OK   teste do teste: trocar «estimado» por «confirmado» é detetado
+resumo: 22/22 verificações OK
+-> aprovado (22 verificações)
+=== testes/02_invariantes.js
+OK   saldo final − inicial = receitas − despesas + transferências externas (regras 1, 2 e 3)
+OK   a soma das categorias é igual às despesas
+OK   a soma das barras de receitas é igual às receitas
+OK   a soma das barras de despesas é igual às despesas
+OK   sem filtro de categoria, despesas = despesas totais
+OK   com filtro, despesas = soma das categorias escolhidas
+OK   o filtro de categorias NÃO altera saldos, receitas nem transferências (regra 7)
+OK   saldo combinado = soma dos saldos de cada conta, dia a dia (regra 3)
+OK   movimentos futuros não alteram nada (regra 4)
+OK   saldo final de um mês = saldo inicial do seguinte
+OK   transferência entre contas escolhidas não altera saldo combinado, receitas, despesas (regras 1 e 3)
+OK   transferência interna é contada à parte
+OK   transferência para fora da seleção muda o saldo, mas não é receita nem despesa (regras 1 e 2)
+   contagens: {"total":2880,"combinados":1123,"continuidade":864,"transferencias":600}
+resumo: 13/13 verificações OK
+-> aprovado (13 verificações)
+=== testes/03_consistencia.js
+OK   Receitas do mês: Início = Análise (885,42 €)
+OK   Despesas do mês: Início = Análise (3750,55 €)
+OK   Saldo de cada uma das 6 contas: Contas = Análise (Saldo final)
+OK   Soma dos saldos de todas as contas (balance) = Saldo final combinado da Análise, ao cêntimo (-46057724 vs -46057724)
+OK   Início (cartão verde) = Contas → Património: «Disponível» e «Poupança» (-356 741,88 € / -41 628,07 €)
+OK   «Disponível para gastar» do Início = Saldo final da Análise (contas à ordem + dinheiro) (-356 741,88 €)
+OK   «Poupança» do Início = Saldo final da Análise (contas poupança) (-41 628,07 €)
+OK   Gasto de cada categoria com orçamento: Orçamentos = Análise (categorias)
+OK   Totais do mês na lista Movimentos = Análise (receitas, despesas, resultado) (885,42 € | 3750,55 € | -2865,13 €)
+OK   há movimentos futuros neste mês (a verificação é real) e não contam em lado nenhum (9 movimentos agendados)
+OK   a lista identifica os movimentos agendados
+OK   recorrente: 3 movimentos (ago, set, out; o de nov ainda é futuro), sem duplicados depois de reabrir 3 vezes ["2026-08-15","2026-09-15","2026-10-15"]
+OK   recorrente: a Análise soma exatamente 3 × 30,50 € = 91,50 € (9150)
+resumo: 13/13 verificações OK
+-> aprovado (13 verificações)
+=== testes/04_interface.js
+OK   a barra de baixo continua a ter só os 5 separadores
+OK   atalho «Ver análise completa» no Início
+OK   o atalho abre Movimentos → Análise
+OK   «Movimentos» mantém a lista (pesquisa, filtros e movimentos)
+OK   a pesquisa da lista mantém-se ao alternar de vista
+OK   períodos: Dia, Semana, Mês, Ano
+OK   mês atual: novembro de 2026
+OK   «seguinte» desativado no período atual
+OK   seta anterior: outubro de 2026
+OK   aparece «Voltar a hoje»
+OK   9 setas atrás: janeiro de 2026
+OK   virada de ano: dezembro de 2025
+OK   seta seguinte: janeiro de 2026
+OK   «Voltar a hoje»
+OK   semana começa à segunda-feira: 2 a 8 de novembro de 2026 (hoje é sexta, 6 nov) ["2026-11-02","2026-11-08"]
+OK   semana anterior atravessa meses: 26 out a 1 nov 2026 ["2026-10-26","2026-11-01"]
+OK   semana que atravessa o ano: 30 dez 2024 a 5 jan 2025 ["2024-12-30","2025-01-05","2024-12-23"]
+OK   ano atual: 2026
+OK   ano anterior: 2025
+OK   dia: sexta-feira, 6 de novembro de 2026 sexta-feira, 6 de novembro de 2026
+OK   dia anterior: quinta-feira, 5 de novembro de 2026
+OK   lista de contas com caixas de seleção (nenhuma escolhida = todas)
+OK   várias contas: o resumo atualiza-se (saldo final de 4 contas) -341 308,74 €
+OK   o botão mostra «4 contas»
+OK   «Limpar filtros» aparece
+OK   «Limpar filtros» repõe tudo
+OK   atalho «Disponível» marca só contas à ordem e dinheiro
+OK   filtro por categoria: o saldo inicial e final da conta NÃO mudam
+OK   filtro por categoria: o gráfico de saldo NÃO muda
+OK   filtro por categoria: receitas/resultado/taxa escondidos e aviso presente
+OK   filtro por categoria: «Despesas (categorias escolhidas)» = categoria na lista
+OK   desmarcar a única categoria volta a «todas»
+OK   tocar num ponto do gráfico mostra a data e o saldo desse dia quarta, 16/09/2026 · -443 099,72 € · ▼ 1620,29 €
+OK   os movimentos desse dia aparecem por baixo (mesmo número que nos dados) (1 movimentos em 2026-09-16)
+OK   tocar outra vez no mesmo ponto limpa a seleção
+OK   arrastar o dedo pelo gráfico percorre os dias
+OK   o saldo de cada dia do gráfico aparece como «subiu»/«desceu» no tooltip
+OK   tocar numa barra seleciona esse dia e lista os seus movimentos (2026-09-11: 0)
+OK   o ponto do gráfico de saldo acompanha a barra escolhida
+OK   tocar numa categoria lista só as despesas dessa categoria no período (lazer: 2)
+OK   tocar outra vez na categoria limpa a seleção
+OK   teclado: as setas ← mudam de dia e o foco mantém-se no gráfico (2026-09-29 → 2026-09-28)
+OK   botões ‹ › também mudam de dia
+OK   editar um movimento na lista da análise atualiza os números e mantém a seleção
+OK   vista diária: cartões do dia e movimentos do dia (lista visível sem tocar em nada)
+OK   vista diária: gráfico compacto dos últimos 7 dias
+OK   vista diária: expandir para 30 dias
+OK   vista diária: tocar num ponto muda o dia mostrado (quinta-feira, 5 de novembro de 2026 → quinta-feira, 22 de outubro de 2026)
+OK   vista diária: sem gráfico de barras (os movimentos do dia são a lista)
+OK   contas sem histórico: aviso «Saldos estimados» visível
+OK   a legenda mostra «estimado» e o gráfico tem zona tracejada
+OK   o saldo de um dia antigo diz «(estimado)»
+OK   o saldo final de hoje nunca é estimado
+OK   uma semana recente com dados confirmados não mostra aviso
+OK   com histórico completo não há aviso de estimativa
+OK   modo privado: nenhum gráfico, cartão, valor em euros ou tooltip {"svg":0,"cards":0,"tip":false,"euros":false,"lock":true}
+OK   modo privado: os controlos (período e filtros) continuam disponíveis
+OK   premir o 👁️ mostra a análise
+OK   largar volta a esconder tudo
+OK   com teclado (Enter no olho) mostra durante 15 s
+OK   320 px (conta com nome muito comprido): sem scroll lateral em nenhum período nem na lista de contas
+OK   alvos de toque >= 44 px em toda a Análise
+OK   axe-core (claro): 0 violações (dia, semana, mês, ano, seleção, folha de filtros)
+OK   axe-core (escuro): 0 violações (dia, semana, mês, ano, seleção, folha de filtros)
+OK   sem movimentos: mensagem clara e sem gráficos
+OK   período muito antigo (sem movimentos): zeros e aviso, sem erros
+OK   se faltar o ficheiro analise.js, a app avisa em vez de partir
+resumo: 67/67 verificações OK
+-> aprovado (67 verificações)
+=== testes/05_dados_offline.js
+OK   após uma sessão intensa de análise, os dados guardados são idênticos, byte a byte (9d19dd4d58534dce = 9d19dd4d58534dce)
+OK   a base de dados em memória também fica igual
+OK   a Análise nunca gravou os dados (nenhuma escrita em poupanca-v2) ["poupanca-tab"]
+OK   formato das cópias de segurança inalterado (as mesmas 6 listas) ["accounts","entries","budgets","goals","recurring","invest"]
+OK   contas, movimentos, orçamentos, objetivos e recorrentes mantêm-se
+OK   importar uma cópia de segurança devolve exatamente os mesmos dados
+OK   a versão aparece em Contas
+OK   dados da versão anterior: a Análise abre e não altera a cópia guardada
+OK   o ficheiro analise.js está na cache offline ["./","manifest.webmanifest","icon-192.png","icon-512.png","apple-touch-icon.png","index.html","style.css","manrope-latin-800-normal.woff2","analise.js","app.js","manrope-latin-500-normal.woff2","manrope-latin-700-normal.woff2"]
+OK   sem rede: a Análise abre, muda de período e desenha os gráficos
+OK   sem rede: tocar no gráfico mostra os movimentos do dia
+OK   analise.js em falta: o service worker instala-se na mesma e guarda os restantes ficheiros {"./":200,"index.html":200,"style.css":200,"manifest.webmanifest":200,"icon-512.png":200,"icon-192.png":200,"apple-touch-icon.png":200,"manrope-latin-800-normal.woff2":200,"app.js":200,"manrope-latin-700-normal.woff2":200,"manrope-latin-500-normal.woff2":200}
+OK   analise.js em falta: nenhum erro 404 fica guardado na cache
+OK   analise.js em falta: a app abre offline e o Início funciona
+resumo: 14/14 verificações OK
+-> aprovado (14 verificações)
+=== testes/06_desempenho.js
+   5000 movimentos (CPU 4x mais lento): cálculo ms {"day":8,"week":5,"month":5,"year":7} | desenho ms {"day":16,"week":16,"month":22,"year":22} | arrastar 0.76 ms/movimento (máx 5) | filtros 27 ms | 310 elementos | 310 pontos no gráfico
+OK   5000 movimentos: o cálculo de qualquer período demora menos de 120 ms {"day":8,"week":5,"month":5,"year":7}
+OK   5000 movimentos: desenhar a Análise demora menos de 300 ms {"day":16,"week":16,"month":22,"year":22}
+OK   5000 movimentos: arrastar o dedo pelo gráfico é fluido (média abaixo de 8 ms, 60 imagens por segundo = 16 ms) (0.76 ms)
+OK   5000 movimentos: a página não fica pesada (menos de 3 000 elementos) (310)
+   20000 movimentos (CPU 4x mais lento): cálculo ms {"day":14,"week":18,"month":16,"year":19} | desenho ms {"day":32,"week":27,"month":36,"year":36} | arrastar 0.54 ms/movimento (máx 4) | filtros 53 ms | 309 elementos | 310 pontos no gráfico
+OK   20000 movimentos: o cálculo de qualquer período demora menos de 400 ms {"day":14,"week":18,"month":16,"year":19}
+OK   20000 movimentos: desenhar a Análise demora menos de 900 ms {"day":32,"week":27,"month":36,"year":36}
+OK   20000 movimentos: arrastar o dedo pelo gráfico é fluido (média abaixo de 8 ms, 60 imagens por segundo = 16 ms) (0.54 ms)
+OK   20000 movimentos: a página não fica pesada (menos de 3 000 elementos) (309)
+resumo: 8/8 verificações OK
+-> aprovado (8 verificações)
+=== testes/07_fusos.js
+OK   Europe/Lisbon: 540 cenários iguais ao cálculo independente
+OK   Atlantic/Azores: 540 cenários iguais ao cálculo independente
+OK   Asia/Tokyo: 540 cenários iguais ao cálculo independente
+OK   America/Los_Angeles: 540 cenários iguais ao cálculo independente
+OK   Pacific/Auckland: 540 cenários iguais ao cálculo independente
+OK   Pacific/Kiritimati: 540 cenários iguais ao cálculo independente
+OK   Pacific/Pago_Pago: 540 cenários iguais ao cálculo independente
+OK   Asia/Kolkata: 540 cenários iguais ao cálculo independente
+OK   Europe/Lisbon em 2026-03-29T00:30Z: o «dia de hoje» da Análise é 2026-03-29 e inclui o movimento desse dia {"hoje":"2026-03-29","ancora":"2026-03-29","intervalo":{"start":"2026-03-29","end":"2026-03-29"},"saldo":500,"desp":500}
+OK   Europe/Lisbon em 2026-03-29T01:30Z: o «dia de hoje» da Análise é 2026-03-29 e inclui o movimento desse dia {"hoje":"2026-03-29","ancora":"2026-03-29","intervalo":{"start":"2026-03-29","end":"2026-03-29"},"saldo":500,"desp":500}
+OK   Europe/Lisbon em 2026-10-25T00:30Z: o «dia de hoje» da Análise é 2026-10-25 e inclui o movimento desse dia {"hoje":"2026-10-25","ancora":"2026-10-25","intervalo":{"start":"2026-10-25","end":"2026-10-25"},"saldo":500,"desp":500}
+OK   Europe/Lisbon em 2026-10-25T01:30Z: o «dia de hoje» da Análise é 2026-10-25 e inclui o movimento desse dia {"hoje":"2026-10-25","ancora":"2026-10-25","intervalo":{"start":"2026-10-25","end":"2026-10-25"},"saldo":500,"desp":500}
+OK   Europe/Lisbon em 2026-12-31T23:59Z: o «dia de hoje» da Análise é 2026-12-31 e inclui o movimento desse dia {"hoje":"2026-12-31","ancora":"2026-12-31","intervalo":{"start":"2026-12-31","end":"2026-12-31"},"saldo":500,"desp":500}
+OK   Europe/Lisbon em 2027-01-01T00:00Z: o «dia de hoje» da Análise é 2027-01-01 e inclui o movimento desse dia {"hoje":"2027-01-01","ancora":"2027-01-01","intervalo":{"start":"2027-01-01","end":"2027-01-01"},"saldo":500,"desp":500}
+OK   America/Los_Angeles em 2026-11-01T08:30Z: o «dia de hoje» da Análise é 2026-11-01 e inclui o movimento desse dia {"hoje":"2026-11-01","ancora":"2026-11-01","intervalo":{"start":"2026-11-01","end":"2026-11-01"},"saldo":500,"desp":500}
+OK   Pacific/Auckland em 2026-09-26T12:30Z: o «dia de hoje» da Análise é 2026-09-27 e inclui o movimento desse dia {"hoje":"2026-09-27","ancora":"2026-09-27","intervalo":{"start":"2026-09-27","end":"2026-09-27"},"saldo":500,"desp":500}
+OK   Pacific/Kiritimati em 2026-11-06T10:30Z: o «dia de hoje» da Análise é 2026-11-07 e inclui o movimento desse dia {"hoje":"2026-11-07","ancora":"2026-11-07","intervalo":{"start":"2026-11-07","end":"2026-11-07"},"saldo":500,"desp":500}
+OK   3300 dias seguidos (2019 a 2028, com 2020 e 2024 bissextos): sem saltos, semanas de 7 dias a começar à segunda, meses e anos com o número certo de dias
+resumo: 18/18 verificações OK
+-> aprovado (18 verificações)
+=== testes/08_toque.js
+OK   toque no gráfico de saldo seleciona um dia {"start":"2026-10-18","end":"2026-10-18"}
+OK   o tooltip mostra um valor em euros
+OK   toque numa barra seleciona esse dia
+OK   toque numa categoria seleciona-a e lista só essas despesas
+OK   sem scroll lateral e sem zoom acidental depois dos toques {"lateral":false,"zoom":1}
+resumo: 5/5 verificações OK
+-> aprovado (5 verificações)
+=== testes/09_historico_estimado.js
+OK   conta sem movimentos: o saldo é sempre o saldo inicial (40,00 €), sem inventar movimentos
+OK   conta sem movimentos: TODOS os dias anteriores a hoje são estimados
+OK   conta sem movimentos: o dia de hoje é o saldo real (não estimado) e os dias anteriores sim
+OK   conta sem movimentos (outubro): aviso «Saldos estimados» com o nome da conta
+OK   conta sem movimentos: o saldo inicial e o final do mês dizem «estimado»
+OK   conta sem movimentos: o gráfico tem zona tracejada e a legenda «estimado»
+OK   conta sem movimentos: o tooltip de um dia antigo diz «(estimado)»
+OK   conta sem movimentos, mês atual: «Saldo final» (hoje) NÃO diz estimado
+OK   todas as contas, uma delas sem movimentos: o histórico antes de hoje continua estimado ["Carteira vazia"]
+OK   sem a conta vazia (A + B): outubro tem histórico confirmado, sem estimativa
+OK   conta A (1.º movimento a 10/01): 9/01 estimado, 10/01 já calculado
+OK   conta A: antes do 1.º movimento o saldo é o saldo inicial (1000,00 €)
+OK   conta B (o 1.º movimento é RECEBER uma transferência a 15/01): 14/01 estimado, 15/01 calculado [["2026-01-14",50000,true],["2026-01-15",60000,false]]
+OK   A + B juntas: estimado até ao 1.º movimento da conta MAIS TARDIA (14/01), confirmado a partir de 15/01
+OK   janeiro (UI): aviso de estimativa visível, com as contas em causa
+OK   março (UI), com ambas as contas já com movimentos: sem aviso, sem zona tracejada e sem «estimado» nos cartões
+OK   só movimentos futuros: hoje ainda não conta, saldo = 200,00 € e histórico estimado
+OK   no dia do movimento (01/12): esse dia já é calculado (saldo 150,00 €) e os anteriores continuam estimados
+OK   depois do movimento: 30/11 estimado (200,00 €), 01/12 em diante calculado (150,00 €)
+OK   alterar o saldo inicial de A (1000 → 1234,56): TODOS os dias do histórico sobem exatamente +234,56 €
+OK   …e o saldo de A em Contas e o «Saldo final» da Análise coincidem com o novo valor
+OK   …a conta A e as outras contas e o conjunto «todas» sobem também +234,56 €
+OK   …as marcas «estimado» NÃO mudam (dependem só das datas dos movimentos)
+OK   …receitas, despesas, transferências e categorias ficam iguais
+OK   …nenhum movimento foi alterado, e as outras contas ficaram como estavam
+OK   …depois da alteração, janeiro continua a avisar que parte do histórico é estimada
+OK   conta vazia com saldo inicial negativo (-80,00 €, cartão): histórico = -80,00 € e continua estimado
+OK   repor o saldo inicial (1000) devolve exatamente o histórico original
+OK   a nota sob o gráfico diz que o saldo é calculado a partir do saldo inicial e dos movimentos registados
+resumo: 29/29 verificações OK
+-> aprovado (29 verificações)
+=== testes/10_atualizacao_do_servico.js
+OK   ponto de partida: a instalação é a v20 (cache poupanca-v15), com PIN e dados ["poupanca-v15","outra-app-v1","poupanca-v3"]
+   (1.ª abertura depois de publicar a v21: a app corre a v20. O service worker que está nos telemóveis (v20) é quem atende este pedido e pode devolver ficheiros guardados durante os 10 minutos do GitHub Pages; a nova versão instala-se em segundo plano)
+OK   1.ª abertura depois de publicar: a app abre e funciona sem erros (como v20, ou como v21 completa), mesmo que o navegador misture ficheiros de duas versões {"analise":false,"fn":false,"v":"v20"}[]
+OK   o novo service worker instala-se e ativa-se sozinho (cache da versão nova) ["outra-app-v1","poupanca-v26"]
+OK   as caches antigas da Poupança foram apagadas (poupanca-v15 e poupanca-v3) ["outra-app-v1","poupanca-v26"]
+OK   a cache de OUTRA app da mesma origem não foi tocada (outra-app-v1)
+OK   a cache nova tem TODOS os ficheiros, incluindo analise.js ["./","index.html","style.css","app.js","manifest.webmanifest","icons/icon-192.png","analise.js","icons/icon-512.png","icons/apple-touch-icon.png"]
+OK   os ficheiros guardados na cache offline são exatamente os da v21 publicada {"index.html":true,"app.js":true,"analise.js":true,"style.css":true}
+OK   na abertura seguinte a app já é a v21 (com analise.js)
+OK   o PIN antigo continua a abrir a app depois da atualização
+OK   NENHUM dado guardado mudou na atualização (movimentos, contas, orçamentos, objetivos, PIN, preferências, data do backup) (7 chaves iguais byte a byte, 36b5187eebe5)
+OK   os dados continuam todos lá: contas, movimentos, orçamento, objetivo, recorrente e investimento
+OK   Contas mostra «Poupança v26» e o lembrete de backup da v20 mantém-se nas Definições (última cópia há 17 dias)
+OK   a Análise abre com os dados antigos
+OK   abrir a Análise depois da atualização não alterou os dados guardados
+OK   sem rede, depois de atualizar: a app abre, pede o PIN e a Análise funciona
+OK   sem erros de JavaScript em todo o processo de atualização []
+OK   publicar uma versão nova com o telemóvel sem rede: a app antiga continua a funcionar e os dados ficam intactos
+OK   quando volta a haver rede, atualiza-se sozinha para a v21 sem perder dados
+OK   atualização futura v26 → v27: a 1.ª abertura depois de publicar já mostra a v27 (apesar do max-age=600 do servidor) versão a correr: v27
+   (nota: ao carregar no botão de recarregar do próprio separador, o Chromium pode reaproveitar ficheiros que já tem em memória e mostrar ainda a v26; ao fechar e abrir a app já aparece a v27)
+OK   controlo negativo: SEM as proteções, o mesmo cenário ficaria preso na v21 (prova que as proteções fazem falta) versão a correr: v26
+OK   o nome da cache do service worker acompanha a versão da app (app v26, cache poupanca-v26)
+OK   todos os ficheiros que o index.html usa estão na lista da cache offline []
+OK   todos os ficheiros da lista da cache existem na pasta do projeto []
+OK   o service worker só apaga caches que começam por «poupanca-» e nunca guarda erros
+resumo: 24/24 verificações OK
+-> aprovado (24 verificações)
+=== testes/11_correcoes_da_revisao.js
+OK   baixar o valor pretendido (3000 → 500) não corta o valor poupado à mão (610 €) {"saved":610,"target":500}
+OK   com 610 + 150 já acima de 500 €, o cartão mostra «Concluído» e 100%
+OK   repor o valor pretendido (3000) devolve exatamente o poupado antes: 610 € à mão + 150 € de movimentos = 760 € {"saved":610}
+OK   um objetivo novo guarda o valor que escreveste, mesmo acima do pretendido (1200 de 1000)
+OK   prazo ultrapassado: aparece «Prazo ultrapassado» e NÃO aparece «Poupança mensal necessária»
+OK   o formulário do objetivo diz que o valor é «à mão» e mostra os movimentos associados (150,00 €) Editar objetivoObjetivo Valor pretendido em € Já tenho poupado (à mão) em € Além deste valor, há +150,00 € de movimentos associados ao objetivo (por isso o cartão mostra 760,00 €). Aqui só edita
+OK   o cartão do objetivo continua a mostrar o total (760,00 €)
+OK   orçamento total a 97% (53,50 / 55 €): a barra avisa (laranja) bar warn
+OK   abaixo de 80% fica normal
+OK   acima de 100% fica vermelha
+OK   mês a meio com o período anterior vazio: o texto indica o intervalo comparado, em vez de «sem dados» Despesas53,50 €sem movimentos de 1/10 a 6/10
+OK   «Dívidas» aparece no Património com sinal «-» e cor vermelha (e o Início já não repete o quadro) [0,["-5000,00 €","neg"]]
+OK   A pagar (30 dias) = 30 (ginásio) + 25 (agendado) = 55,00 € e A receber = 100,00 €; o agendado de daqui a 3 meses não entra ["A pagar (30 dias)55,00 €","A receber (30 dias)100,00 €"]
+OK   a lista dos próximos 30 dias mostra os movimentos agendados
+OK   transferir 100 € da Carteira (40,50 €): aparece um aviso a dizer que ficaria negativa ["«Carteira» ficaria com saldo negativo (-59,50 €). Em dinheiro físico ou poupança isso normalmente não é possível: confirma o saldo inicial e os movimentos. Guardar mesmo assim?"]
+OK   «Cancelar» no aviso não guarda o movimento (o formulário fica aberto)
+OK   «OK» no aviso guarda o movimento
+OK   uma conta à ordem pode ficar a descoberto sem aviso (é um caso normal)
+OK   uma poupança que ficaria negativa também avisa ["«Poupança» ficaria com saldo negativo (-4200,00 €). Em dinheiro físico ou poupança isso normalmente não é possível: confirma o saldo inicial e os movimentos. Guardar mesmo assim?"]
+OK   e volta a avisar se um novo movimento a deixar ainda mais negativa (Carteira já em -59,50 €) ["«Carteira» ficaria com saldo negativo (-69,50 €). Em dinheiro físico ou poupança isso normalmente não é possível: confirma o saldo inicial e os movimentos. Guardar mesmo assim?"]
+OK   a confirmação de apagar diz o que se apaga e que não se pode desfazer (movimento, objetivo, orçamento, recorrente, investimento e conta)
+OK   «abc» e «12.5.3» dizem que o valor não é válido; «0» diz que tem de ser maior que zero ["O valor não é válido. Usa só números, por exemplo 12,50.","Indica um valor maior que zero.","O valor não é válido. Usa só números, por exemplo 12,50."]
+OK   o texto de Contas explica que se edita o «saldo inicial» para acertar o saldo
+resumo: 23/23 verificações OK
+-> aprovado (23 verificações)
+=== testes/12_correcoes_da_auditoria.js
+OK   esvaziar a carteira ao cêntimo já não dispara o aviso de saldo negativo []
+OK   o saldo da carteira esvaziada é «0,00 €» (sem sinal) 0,00 €
+OK   «Disponível para gastar» mostra «0,00 €» 0,00 €
+OK   o aviso de saldo negativo continua a aparecer quando fica mesmo negativo (-0,01 €) ["«Carteira» ficaria com saldo negativo (-0,01 €). Em dinheiro físico ou poupança isso normalmente não é possível: confirma o saldo inicial e os movimentos. Guardar mesmo assim?"]
+OK   objetivo pago ao cêntimo (18,16 + 60,69 + 99,80 = 178,65) mostra 100% e «Concluído» Viagem ✎100% Já poupado 178,65 € de 178,65 € Concluído ✅+ Juntar dinheiro
+OK   movimento com a data 0026-11-05 é recusado com uma mensagem Indica uma data válida (confirma o ano: tem de estar entre 1900 e 2200).
+OK   movimento com a data 1899-12-31 é recusado com uma mensagem Indica uma data válida (confirma o ano: tem de estar entre 1900 e 2200).
+OK   movimento com a data 2206-01-01 é recusado com uma mensagem Indica uma data válida (confirma o ano: tem de estar entre 1900 e 2200).
+OK   movimento com uma data normal (2026-11-05) continua a gravar
+OK   prazo de objetivo 2207-06-30 é recusado com uma mensagem O prazo tem de ser uma data entre 1900 e 2200 (confirma o ano), ou ficar vazio.
+OK   prazo normal (2027-06-30) continua a gravar
+OK   regra recorrente com a data 2206-03-01 é recusada (não cria cobranças ao reabrir) Indica uma data válida (confirma o ano: tem de estar entre 1900 e 2200).
+OK   os campos de data têm limites 1900–2200
+OK   depois de «Esqueci-me do PIN» só ficam as preferências (modo privado e boas-vindas) poupanca-privacy, poupanca-welcome
+OK   as Definições abrem e já não há «Desfazer a última importação» para repor dados antigos sem PIN
+OK   tipos, categorias e frequências desconhecidos passam aos valores por omissão ["ordem","expense","outros","outros","outros","expense","monthly","outro"]
+OK   nomes em português (app Swift) continuam a ser reconhecidos
+OK   datas numéricas impossíveis passam a hoje; a data da app Swift continua certa ["2026-11-06","2026-11-06","2026-10-29"]
+OK   nenhum ecrã mostra «undefined», «NaN» ou «Invalid Date» depois desta importação
+OK   separador guardado inválido abre no Início, sem erros []
+OK   com o modo privado, o formulário do objetivo esconde os montantes Editar objetivoObjetivo Valor pretendido em € Já tenho poupado (à mão) em € Além deste valor, há +•••• de movimentos associados ao objetivo (por isso o cartão m
+OK   o separador ativo tem aria-current="page"
+OK   a secção escolhida de Contas tem aria-pressed
+OK   o tipo de movimento escolhido é anunciado (aria-pressed muda ao tocar) income:true expense:false transfer:false
+OK   o nome do objetivo é um botão: abre com o teclado (Enter)
+OK   o botão «Juntar dinheiro» do objetivo tem nome para leitores de ecrã Juntar dinheiro ao objetivo Casa
+OK   com a mudança de hora pelo meio, 28/02 → 30/03 conta «há 30 dias» e mostra o aviso A última cópia foi há 30 dias (28/02/2026). Exporta uma cópia nas Definições (⚙️).
+resumo: 27/27 verificações OK
+-> aprovado (27 verificações)
+=== testes/13_interface_v24.js
+OK   Início: os alertas vêm logo a seguir ao cartão verde, antes do registo rápido hero > alerta > alerta > card passos > registo > card semana
+OK   Início: sem gráficos nem «Despesas por categoria» (estão na Análise)
+OK   Início: sem o quadro repetido do património; o cartão verde mostra Poupança e Património líquido DISPONÍVEL PARA GASTAR3920,00 €Poupança: 200,00 € · Património líquido: 4120,00 €Até 156,19 € por dia até ao fim do mês
+OK   Início: sem os dois botões grandes de adicionar; o atalho para a Análise continua
+OK   Início: receitas iguais ao mês anterior dizem «= igual ao mesmo período do mês anterior»
+OK   Início: «+» visível também no Início
+OK   «+» no Início abre «Novo movimento» com o teclado já no valor
+OK   modo privado: a taxa de poupança aparece como •••• e sem barra  ↙ Receitas de nov.••••= igual ao mesmo período do mês anterior ↗ Despesas de nov.••••= igual ao mesmo período do mês anterior Taxa de poupa
+OK   Contas já não tem cópia de segurança, segurança nem ajuda; continua a mostrar a versão
+OK   ⚙️ abre as Definições com cópia de segurança, modo privado, PIN e ajuda
+OK   ligar o modo privado nas Definições atualiza o botão e mostra o olho
+OK   «Fechar» fecha as Definições
+OK   o campo de ficheiro da importação está sempre presente (fora dos ecrãs)
+OK   importar a partir das Definições funciona e as Definições passam a mostrar «Desfazer»
+OK   Movimentos: separadores por mês com o total de cada mês (sem os agendados) novembro de 2026+1500,00 € · -40,00 € | outubro de 2026+1500,00 € · -40,00 €
+OK   Movimentos: sem filtros não aparece o cartão de totais de todos os meses
+OK   Movimentos: os 3 filtros cabem numa só linha
+OK   com um filtro: aparece o cartão de totais, o filtro fica realçado e há «Limpar filtros»
+OK   «Limpar filtros» repõe tudo
+OK   sem objetivos criados, o formulário não mostra o campo «objetivo»
+OK   guardar sem o campo «objetivo» funciona (movimento sem objetivo)
+OK   cartão do objetivo compacto: já poupado, falta, poupança mensal e «Juntar dinheiro» Viagem ✎10% Já poupado 100,00 € de 1000,00 € Faltam 900,00 € até 30/06/2027 · Poupança mensal necessária: 112,50 € Atrasado+ Juntar dinheiro
+OK   «Juntar dinheiro» abre uma transferência para a poupança, já associada ao objetivo, com o teclado no valor {"kind":"transfer","dest":"p","goal":"g","foco":"amount","label":"Juntar a um objetivo (opcional)"}
+OK   guardar soma ao objetivo (100 → 150) e cria a transferência a sério
+OK   tocar no cartão abre o objetivo para editar
+OK   a 320 px, com olho + ⚙️ + «+», o título cabe e a página não fica mais larga que o ecrã
+resumo: 26/26 verificações OK
+-> aprovado (26 verificações)
+=== testes/14_categorias_novas.js
+OK   as categorias antigas continuam todas lá
+OK   as 9 categorias novas existem com o nome certo
+OK   mudar 9 despesas antigas para as categorias novas grava sem erro []
+OK   as categorias ficaram gravadas
+OK   saldos, disponível, total de despesas e objetivo não mudam [2420.85,2420.85]
+OK   só a categoria mudou (valor, data, conta, nota, objetivo e ids iguais)
+OK   nenhum ecrã mostra «undefined» ou «NaN»
+OK   a Análise mostra as despesas nas categorias novas impostos,educacao,animais,presentes,cafes,automovel,roupa,ginasio,cabeleireiro
+OK   o filtro de categorias da Análise tem as 21 categorias
+OK   o filtro de Movimentos encontra as despesas das categorias novas
+OK   dá para criar um orçamento numa categoria nova e conta o gasto Total em novembro de 202611,35 € / 140,00 € 🍽️ Restaurantes0,00 € / 100,00 € 0% · Dentro do limite🏋️ Ginásio11,35 € / 40,00 € 28% · Dentro do limiteToca num o
+OK   exportar e importar a cópia mantém as categorias novas
+OK   voltar a pôr uma despesa numa categoria antiga também funciona
+OK   o registo rápido reconhece as categorias novas ["cafes","automovel","ginasio","cabeleireiro","animais","educacao","impostos","presentes","roupa","cafes","restaurantes","transportes"]
+resumo: 14/14 verificações OK
+-> aprovado (14 verificações)
+=== testes/15_interface_v26.js
+OK   separadores: 5 ícones desenhados (SVG) e os nomes de sempre [{"svg":true,"t":"Início"},{"svg":true,"t":"Movimentos"},{"svg":true,"t":"Orçamentos"},{"svg":true,"t":"Objetivos"},{"svg":true,"t":"Contas"}]
+OK   a letra Manrope vem da própria app (funciona offline) e é a letra do texto
+OK   cores da marca: fundo creme e cartão principal azul {"bg":"rgb(247, 245, 240)","hero":"rgb(23, 50, 77)"}
+OK   cartão principal: «Até 72,92 € por dia até ao fim do mês» (previsão ÷ dias que faltam, contando com hoje) Até 72,92 € por dia até ao fim do mês
+OK   a previsão explica o valor por dia e quantos dias faltam
+OK   ordem do Início: cartão, alertas, primeiros passos, registo rápido, semana, mês hero > alerta > passos > registo > semana > mes > DIV > BUTTON > H2 > DIV > H2 > DIV
+OK   semana: 7 dias de segunda (16) a domingo (22), hoje (18) em destaque ["Seg16","Ter17","Qua18","Qui19","Sex20","Sáb21","Dom22"]
+OK   semana: o ponto marca só os dias com despesas já feitas (o agendado de dia 20 não conta)
+OK   semana: total gasto 30,00 € (sem o agendado nem a despesa da semana anterior)
+OK   semana: hoje mostra «20,00 € em 1 despesa» Quarta-feira, 18 de novembro: 20,00 € em 1 despesa.
+OK   semana: tocar em segunda mostra o que se gastou nesse dia Segunda-feira, 16 de novembro: 10,00 € em 1 despesa.
+OK   semana: um dia futuro diz que ainda não chegou
+OK   primeiros passos: 2 de 5 feitos (conta e movimento) e 3 por fazer
+OK   primeiros passos: «Definir um orçamento» abre o formulário no separador Orçamentos
+OK   primeiros passos: «Esconder esta lista» esconde e fica escondida depois de reabrir
+OK   modo privado: o valor por dia fica escondido (••••) Até •••• por dia até ao fim do mês
+OK   sem contas: sem valor por dia e sem semana; os primeiros passos aparecem com 0 de 5
+OK   estados vazios com desenho de traço à mão (SVG) em vez de emoji
+OK   primeiros passos: «Criar a primeira conta» abre o formulário da conta em Contas
+OK   320 px: a semana e os separadores cabem sem scroll lateral
+OK   320 px: os nomes dos separadores não se sobrepõem
+OK   as 3 letras Manrope existem e ficam na cache para funcionar offline {"cache":true,"st":[200,200,200]}
+resumo: 22/22 verificações OK
+-> aprovado (22 verificações)
+=== testes/anteriores/10_dados_danificados_e_importacao.js
+OK   dados «{"accounts":[{"id":1»: avisa e guarda cópia 
+OK   dados «{}»: avisa e guarda cópia 
+OK   dados «null»: avisa e guarda cópia 
+OK   dados «[]»: avisa e guarda cópia 
+OK   dados «"texto"»: avisa e guarda cópia 
+OK   dados «{"accounts":5}»: avisa e guarda cópia 
+OK   aviso: os dados originais ainda estão guardados antes de qualquer escrita 
+OK   «Exportar os dados danificados» descarrega o conteúdo original 
+OK   criar uma conta nova não perde a cópia dos dados danificados 
+OK   depois de reabrir não volta a avisar 
+OK   primeira abertura: só as boas-vindas, sem aviso de danificados 
+OK   dados válidos: sem aviso 
+OK   com PIN: primeiro pede o PIN 
+OK   com PIN: depois de desbloquear, avisa dos dados danificados 
+OK   rejeita «{}» sem pedir confirmação e sem apagar nada Este ficheiro não parece uma cópia de segurança da Poupança.
+OK   rejeita «[]» sem pedir confirmação e sem apagar nada Este ficheiro não parece uma cópia de segurança da Poupança.
+OK   rejeita «"x"» sem pedir confirmação e sem apagar nada Este ficheiro não parece uma cópia de segurança da Poupança.
+OK   rejeita «{"accounts":5}» sem pedir confirmação e sem apagar nada Este ficheiro não parece uma cópia de segurança da Poupança.
+OK   rejeita «vazio com listas» sem pedir confirmação e sem apagar nada O ficheiro está vazio (sem contas nem movimentos). Não foi importado.
+OK   rejeita «só movimentos» sem pedir confirmação e sem apagar nada Este ficheiro não parece uma cópia de segurança da Poupança.
+OK   rejeita «não é JSON» sem pedir confirmação e sem apagar nada Este ficheiro não é uma cópia de segurança válida.
+OK   rejeita «outro formato» sem pedir confirmação e sem apagar nada Este ficheiro não parece uma cópia de segurança da Poupança.
+OK   rejeita «movimentos sem contas» sem pedir confirmação e sem apagar nada O ficheiro tem movimentos mas nenhuma conta. Não foi importado.
+OK   cancelar não altera os dados Importar 1 conta(s), 1 movimento(s), 0 orçamento(s) e 0 objetivo(s)? Isto substitui os dados atuais (podes desfazer a seguir nas Definições).
+OK   o campo do ficheiro fica limpo (permite escolher o mesmo ficheiro) 
+OK   escolher o mesmo ficheiro outra vez importa Importar 1 conta(s), 1 movimento(s), 0 orçamento(s) e 0 objetivo(s)? Isto substitui os dados atuais (podes desfazer a seguir nas Definições).
+OK   a confirmação mostra contas, movimentos, orçamentos e objetivos 
+OK   botão «Desfazer a última importação» aparece (Definições) 
+OK   desfazer repõe os dados de antes da importação 
+erros JS: []
+-> aprovado (29 verificações)
+=== testes/anteriores/11_datas_impossiveis.js
+OK   30/02/2026 → 28/02/2026 (último dia do mês) 2026-02-28
+OK   30/02/2024 → 29/02/2024 (bissexto) 2024-02-29
+OK   31/04 → 30/04 2026-04-30
+OK   mês 13, mês 0, dia 0, ano 0 e texto → hoje ["2026-11-20","2026-11-20","2026-11-20","2026-11-20","2026-11-20"]
+OK   datas válidas ficam como estão (29/02/2024, 15/01/2026, data com hora) ["2024-02-29","2026-01-15","2026-03-10"]
+OK   prazo do objetivo 30/02 → 28/02; data de criação inválida → hoje ["2026-02-28","2026-11-20"]
+OK   recorrente com próxima data 31/04 → 30/04 2026-11-30
+OK   confirmação avisa das datas corrigidas Atenção: 11 data(s) impossíveis (ex.: 30/02) serão corrigidas: o dia passa ao último dia do mês, ou a hoje se o resto da data não fizer sentido.
+OK   depois de importar, nenhuma data é inválida 
+OK   editar: o campo da data nunca aparece vazio 
+OK   guardar sem data avisa em vez de usar hoje em silêncio 
+OK   dados antigos com data impossível são corrigidos ao abrir a app 
+erros JS: []
+-> aprovado (12 verificações)
+=== testes/anteriores/12_revisao_de_bugs.js
+OK   "1.600" = 1600 
+OK   "1.600.000" aceite 
+OK   "12,50" = 12.5 
+OK   "1.250,50" = 1250.5 
+OK   "0x10" rejeitado 
+OK   "1e3" rejeitado 
+OK   "   " rejeitado 
+OK   saldo negativo "-80" aceite (cartão/descoberto) 
+OK   movimento negativo rejeitado 
+OK   reativar não cria cobranças em atraso movimentos=0
+OK   próxima data >= hoje 2026-12-12
+OK   importa tipo de conta desconhecido sem partir a app 
+OK   ids ficam só com caracteres seguros 
+OK   referências mantêm-se (movimento liga à conta) 
+OK   nenhum código injetado correu 
+OK   CSP bloqueia scripts injetados 
+OK   valores em texto convertidos (100 + 50, não "10050") 
+OK   tipo de movimento/recorrente/investimento inválidos corrigidos 
+OK   ficheiro estranho não apaga os dados nem deixa em branco 
+OK   data Swift no dia local (02/07, não 01/07) 2026-07-02
+OK   "Casa" → Habitação 
+   disponível: 1000,00 €
+OK   despesa daqui a 60 dias não desconta já 
+OK   "Disponível para gastar" não inclui a Poupança 
+OK   no dia do prazo não diz "Prazo ultrapassado" 
+OK   património mostra Poupança à parte 
+OK   comparação "mesmo período" 
+OK   pesquisa "12,50" 
+OK   pesquisa "12.5" 
+OK   pesquisa "cafe" acha "Café" 
+OK   pesquisa "CAFÉ" 
+OK   formulário aberto 
+OK   formulário fecha ao sair da app (modo privado) 
+OK   «barbeiro» não vai para a conta "Bar" {"kind":"expense","amount":"15","acc":"a","note":"Barbeiro","category":"cabeleireiro"}
+OK   «no bar» vai para a conta "Bar" 
+OK   «entrada» já não é receita {"kind":"expense","amount":"8","acc":"a","note":"Bilhete de entrada cinema","category":"lazer"}
+OK   «2 cafés 3,50» = 3,50 3,5
+OK   «2 cafés 5 euros» = 5 5
+OK   «3 camisolas 60» = 60 60
+OK   «12,50 café» continua a funcionar 
+OK   mudar categoria para uma já existente avisa e não apaga 
+erros JS: []
+-> aprovado (40 verificações)
+=== testes/anteriores/13_alteracoes_v16.js
+OK   despesas do mês não incluem o agendado (50, não 450) 
+OK   taxa de poupança ignora o agendado (95%) 95%
+OK   orçamento ignora o agendado (50 / 100) 
+OK   99,6 % mostra 99 % 99% · Aten
+OK   100 % exato mostra 100 % Excedido 
+OK   ordem no mesmo dia: Terceiro, Segundo, Primeiro 
+OK   reabrir não duplica n=3
+OK   editar a data para trás não duplica 2026-09-16,2026-10-16,2026-11-16
+OK   objetivo ignora transferência agendada (100, não 500) 
+OK   previsão desconta a transferência agendada para a Poupança (700) 700,00 
+OK   pesquisa "1.600" acha 1600 
+OK   «cafés» (plural) → Cafés e pequenos-almoços 
+OK   novo orçamento numa categoria que já existe avisa 
+erros JS: []
+-> aprovado (13 verificações)
+=== testes/anteriores/14_objetivos_registo_rapido_boas_vindas.js
+OK   boas-vindas na 1ª abertura 
+OK   fecha com Começar 
+OK   não volta a aparecer 
+OK   reabre em Definições → Ajuda 
+   rótulo (despesa): Retirar de um objetivo (opcional)
+OK   despesa de 100 associada: 500 → 400 400,00
+   rótulo (transferência): Juntar a um objetivo (opcional)
+OK   transferência de 50 associada: 400 → 450 450,00
+   nota no cartão: undefined
+OK   nunca fica negativo 0,00
+OK   "12,50 café" → expense 12,5 cafes "Café"
+OK   "gastei 30 no supermercado" → expense 30 alimentacao "Supermercado"
+OK   "recebi 1500 salário" → income 1500 outros "Salário"
+OK   "uber 8.40" → expense 8,4 transportes "Uber"
+OK   "paguei 1.250,50 renda" → expense 1250,5 habitacao "Renda"
+OK   "ontem 45 ginásio" → expense 45 ginasio "Ginásio"
+OK      "ontem" põe a data de ontem 
+OK   "netflix 12€" → expense 12 subscricoes "Netflix"
+OK   "transferi 100 para Poupança" → transfer 100 outros ""
+OK   "transferi 50 da Carteira para o Banco" → transfer 50 outros ""
+OK   "5 euros pastelaria na Carteira" → expense 5 cafes "Pastelaria"
+OK   sem valor: avisa e não abre 
+OK   guarda ao confirmar 
+erros []
+-> aprovado (20 verificações)
+=== testes/anteriores/15_transferir_para_poupanca.js
+OK   "transferir 100 para poupança" → transfer 100 dest=p
+OK   "quero transferir 100 para a poupança" → transfer 100 dest=p
+OK   "Transferir para poupança 250" → transfer 250 dest=p
+OK   "transferência 80 para poupança" → transfer 80 dest=p
+OK   "passar 50 para a poupança" → transfer 50 dest=p
+OK   "guardei 30 na poupança" → transfer 30 dest=p
+OK   "100 para poupança" → transfer 100 dest=p
+OK   "transferi 50 da Carteira para o Banco" → transfer 50 dest=a
+OK   "receber 100 salário" → income 100 dest=-
+OK   "recebimento 40 reembolso" → income 40 dest=-
+OK   "12,50 café" → expense 12,5 dest=-
+OK   "5 euros pastelaria na Carteira" → expense 5 dest=-
+OK   "gastei 30 no supermercado" → expense 30 dest=-
+OK   guardada como transferência Banco → Poupança {"id":"01c33975-c39f-4cab-895c-ad4fc3ed03d0","date":"2026-11-20","note":"","recId":null,"kind":"transfer","amount":100,"accountId":"a","destId":"p","category":"outros","goalId":null}
+despesas do mês na app: 0,00 € | erros []
+-> aprovado (14 verificações)
+=== testes/anteriores/16_recorrentes_backup_pin.js
+OK   recorrente em atraso cria movimentos n=4
+OK   sem duplicados após reabrir 3x 
+OK   datas únicas 2026-08-15,2026-09-15,2026-10-15,2026-11-15
+   taxa mostrada: 
+    ↙ Receitas de nov.1000,00 €sem dados do mês anterior
+   | esperada ~ 77.0
+OK   transferências/goal não entram na taxa 
+   disponível: 4280,00 € (esperado 4470 )
+OK   importação recupera tudo 
+OK   PIN guardado 
+OK   pede PIN ao abrir 
+OK   PIN errado rejeitado 
+OK   PIN certo desbloqueia 
+OK   bloqueio após 5 tentativas Demasiadas tentativas. Espera 30 s.
+erros []
+-> aprovado (10 verificações)
+=== testes/anteriores/17_lembrete_de_backup.js
+OK   nunca: alerta vermelho na home 
+OK   nunca: estado nas Definições 
+OK   após exportar: verde 
+OK   home sem alerta de backup 
+OK   31 dias: laranja 
+OK   10 dias: sem aviso 
+OK   cancelar partilha não atualiza a data 
+erros []
+-> aprovado (7 verificações)
+=== testes/anteriores/18_olho_premido.js
+OK   premir 50 ms: mostra enquanto premido e esconde logo ao largar 
+OK   premir 500 ms: mostra enquanto premido e esconde logo ao largar 
+OK   premir 900 ms: mostra enquanto premido e esconde logo ao largar 
+OK   premir 3000 ms: mostra enquanto premido e esconde logo ao largar 
+OK   premir 20000 ms: mostra enquanto premido e esconde logo ao largar 
+OK   depois de 20 s continua escondido 
+OK   Enter no olho mostra 
+OK   e esconde sozinho aos 15 s 
+OK   Espaço no olho mostra 
+OK   Espaço outra vez esconde 
+-> aprovado (10 verificações)
+=== testes/anteriores/19_toque_e_alvos.js
+OK   olho >= 44 px 44x44
+OK   + >= 44 px 44x44
+OK   botões normais com touch-action: manipulation 
+-> aprovado (3 verificações)
+=== testes/anteriores/20_acessibilidade_xss_quota.js
+OK   axe-core: sem violações graves ou sérias (WCAG A/AA) 
+OK   texto malicioso em todos os campos: nada é executado 
+OK   o texto malicioso é mostrado como texto (não cria elementos) e volta igual ao editar 
+OK   armazenamento cheio: avisa e a app continua a funcionar 
+erros JS: []
+-> aprovado (4 verificações)
+=== testes/anteriores/21_aleatorios_desempenho_fusos_separadores.js
+OK   saldos de 8 contas com 4000 movimentos = modelo independente 
+OK   disponível + poupança + investido = total 
+OK   transferências conservam o total (>100 testadas) 
+OK   totais do mês = modelo 
+OK   normalize é idempotente e a ida-e-volta não perde nada 
+OK   parseMoney: 12 000 valores em 4 formatos voltam exatamente 
+OK   parseMoney: lixo é sempre recusado 
+OK   registo rápido: 6000 frases aleatórias/hostis, nenhuma rebenta e todas dão resultados válidos exceções=0 inválidos=0
+OK   importação: 1500 ficheiros mutados, nenhum rebenta ao normalizar e desenhar todos os ecrãs exceções=0
+   tempos (ms) com 5000 movimentos: {"home":24,"entries":319,"budgets":4,"goals":0,"accounts":1,"pesquisa":20,"guardar":4,"importar":40,"kb":800}
+OK   todos os ecrãs desenham em menos de 400 ms com 5000 movimentos 
+OK   Europe/Lisbon: recorrentes dia 29/30/31, ano bissexto e viragem de ano/mês 
+OK   Atlantic/Azores: recorrentes dia 29/30/31, ano bissexto e viragem de ano/mês 
+OK   Asia/Tokyo: recorrentes dia 29/30/31, ano bissexto e viragem de ano/mês 
+OK   America/Los_Angeles: recorrentes dia 29/30/31, ano bissexto e viragem de ano/mês 
+OK   Pacific/Auckland: recorrentes dia 29/30/31, ano bissexto e viragem de ano/mês 
+OK   31/12 → 01/01: muda o mês, cria a renda de 01/01 uma vez e o mês novo começa a zero {"before":{"today":"2027-12-31","month":"2027-12","n":1,"exp":10},"after":{"today":"2028-01-01","month":"2028-01","n":2,"rent":"2028-01-01","exp":500}}
+OK   dois separadores abertos: as duas contas ficam guardadas (sem perda de dados) guardado: ["Conta do separador A","Conta do separador B"]
+erros JS: []
+-> aprovado (17 verificações)
+
+RESUMO: 27 de 27 testes aprovados
+TUDO OK

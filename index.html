@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Poupança</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="theme-color" content="#F7F5F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1f31" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Poupança">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preload" href="fonts/manrope-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="mao"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter></svg>
+<header id="top"><h1 id="title">Poupança</h1><div class="hr"><button id="eye" aria-label="Mostrar valores (mantém premido; com leitor de ecrã, toca duas vezes)" aria-pressed="false">👁️</button><button id="defs" aria-label="Definições">⚙️</button><button id="add" aria-label="Adicionar">+</button></div></header>
+<main id="view"></main>
+<nav id="tabs"></nav>
+<div id="cover"><div>🔒<br>Poupança</div></div>
+<div id="lock" hidden role="dialog" aria-modal="true" aria-label="Bloqueio com PIN"></div>
+<div id="sheet-bg" hidden><div id="sheet" role="dialog" aria-modal="true"></div></div>
+<input id="file" type="file" accept=".json,application/json" hidden>
+<script src="analise.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
