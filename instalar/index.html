@@ -17,17 +17,21 @@
 @font-face { font-family: Manrope; src: url(../fonts/manrope-latin-500-normal.woff2) format("woff2"); font-weight: 500; font-display: swap; }
 @font-face { font-family: Manrope; src: url(../fonts/manrope-latin-700-normal.woff2) format("woff2"); font-weight: 700; font-display: swap; }
 @font-face { font-family: Manrope; src: url(../fonts/manrope-latin-800-normal.woff2) format("woff2"); font-weight: 800; font-display: swap; }
-:root { --azul: #17324D; --creme: #F7F5F0; --ambar: #E09F3E; --texto: #17324D; --suave: #4b5d70; --linha: #e4e0d6; }
+/* --ambar nos pormenores; nas letras pequenas sobre fundo claro usa-se o âmbar escuro (contraste 5,0:1) */
+:root { --azul: #17324D; --creme: #F7F5F0; --ambar: #E09F3E; --ambar-letra: #9A5A0C; --texto: #17324D; --suave: #4b5d70; --linha: #e4e0d6; }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body { font-family: Manrope, system-ui, sans-serif; font-weight: 500; color: var(--texto); background: var(--creme); line-height: 1.5; -webkit-text-size-adjust: 100%; }
 a { color: inherit; }
 .wrap { max-width: 1000px; margin: 0 auto; padding: 0 22px; }
-header.topo { padding: 22px 0; }
-.marca { font-weight: 800; font-size: 20px; letter-spacing: -.3px; text-decoration: none; }
-.marca span { color: var(--ambar); }
+header.topo { padding: 22px 0; display: flex; justify-content: space-between; align-items: center; gap: 12px 20px; flex-wrap: wrap; }
+.topo nav { display: flex; gap: 18px; font-weight: 700; font-size: 15px; }
+.topo nav a { text-decoration: none; }
+.topo nav a:hover { text-decoration: underline; text-decoration-color: var(--ambar); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+.marca { font-weight: 700; font-size: 20px; letter-spacing: -.3px; text-decoration: none; white-space: nowrap; }
+.marca .ponto { display: inline-block; width: .3em; height: .3em; margin: 0 .05em 0 .07em; fill: var(--ambar); vertical-align: baseline; }
 .hero { display: grid; gap: 36px; align-items: center; padding: 18px 0 56px; }
-.etiqueta { display: inline-block; color: var(--ambar); font-weight: 700; font-size: 13px; letter-spacing: 1.4px; text-transform: uppercase; }
+.etiqueta { display: inline-block; color: var(--ambar-letra); font-weight: 700; font-size: 13px; letter-spacing: 1.4px; text-transform: uppercase; }
 h1 { font-weight: 800; font-size: clamp(44px, 9vw, 72px); line-height: 1.02; letter-spacing: -2px; margin: 10px 0 14px; }
 .sub { font-size: 19px; color: var(--suave); margin: 0 0 26px; max-width: 30em; }
 .botoes { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -61,13 +65,16 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--linha); color: var(--
   :root { --creme: #0e1f31; --texto: #F7F5F0; --suave: #b9c3cd; --linha: #24384d; }
   .btn.principal { background: var(--ambar); color: #0e1f31; }
   .btn.secundario { border-color: #F7F5F0; }
+  .etiqueta { color: var(--ambar); }
   .cartao { background: #132a41; }
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="topo"><a class="marca" href="https://www.instagram.com/bem.contadopt/">bem<span>.</span>contado</a></header>
+  <header class="topo"><a class="marca" href="https://bemcontadopt.pt/" aria-label="bem.contado, site">bem<svg class="ponto" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5.4" r="4.2"/></svg>contado</a>
+    <nav aria-label="Ligações"><a href="https://bemcontadopt.pt/prazos/">Prazos da semana</a> <a href="https://bemcontadopt.pt/">Site</a></nav>
+  </header>
 
   <main>
     <div class="hero">
@@ -125,14 +132,14 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--linha); color: var(--
 
     <section aria-labelledby="t-priv">
       <h2 id="t-priv">Privacidade</h2>
-      <p class="nota">Os dados que registas nunca saem do telemóvel: não há servidor nem conta. Por isso, faz uma cópia de segurança de vez em quando (⚙️ Definições, Cópia de segurança). Esta página e a app contam, de forma anónima e sem cookies, as visitas e as instalações (contador GoatCounter), para sabermos quantas pessoas a usam.</p>
+      <p class="nota">Os dados que registas nunca saem do telemóvel: não há servidor nem conta. Por isso, faz uma cópia de segurança de vez em quando (⚙️ Definições, Cópia de segurança). Esta página e a app contam, de forma anónima e sem cookies, as visitas e as instalações, para sabermos quantas pessoas a usam.</p>
       <p class="nota">A Poupança é uma app pessoal e gratuita. Não é aconselhamento financeiro.</p>
     </section>
   </main>
 
   <footer>
-    <span><b>bem.contado</b></span>
-    <a href="https://www.instagram.com/bem.contadopt/">Instagram @bem.contadopt</a>
+    <a class="marca" href="https://bemcontadopt.pt/" aria-label="bem.contado, site">bem<svg class="ponto" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5.4" r="4.2"/></svg>contado</a>
+    <span><a href="https://bemcontadopt.pt/">Site</a> · <a href="https://bemcontadopt.pt/prazos/">Prazos da semana</a> · <a href="https://www.instagram.com/bem.contadopt/">Instagram @bem.contadopt</a></span>
   </footer>
 </div>
 <script src="contador.js"></script>
