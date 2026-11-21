@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Poupança · app gratuita da bem.contado</title>
+<meta name="description" content="Poupança: app gratuita para organizar o dinheiro do dia a dia. Sem conta, sem anúncios, com os dados só no teu telemóvel.">
+<meta property="og:title" content="Poupança · app gratuita da bem.contado">
+<meta property="og:description" content="Organiza o dinheiro do dia a dia no telemóvel. Sem conta, sem anúncios, com os dados só no teu telemóvel.">
+<meta property="og:image" content="https://poupanca.bemcontadopt.pt/instalar/img/inicio.webp">
+<meta property="og:url" content="https://poupanca.bemcontadopt.pt/instalar/">
+<meta name="theme-color" content="#17324D">
+<link rel="icon" href="../icons/icon-192.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="preload" href="../fonts/manrope-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: Manrope; src: url(../fonts/manrope-latin-500-normal.woff2) format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: Manrope; src: url(../fonts/manrope-latin-700-normal.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: Manrope; src: url(../fonts/manrope-latin-800-normal.woff2) format("woff2"); font-weight: 800; font-display: swap; }
+:root { --azul: #17324D; --creme: #F7F5F0; --ambar: #E09F3E; --texto: #17324D; --suave: #4b5d70; --linha: #e4e0d6; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: Manrope, system-ui, sans-serif; font-weight: 500; color: var(--texto); background: var(--creme); line-height: 1.5; -webkit-text-size-adjust: 100%; }
+a { color: inherit; }
+.wrap { max-width: 1000px; margin: 0 auto; padding: 0 22px; }
+header.topo { padding: 22px 0; }
+.marca { font-weight: 800; font-size: 20px; letter-spacing: -.3px; text-decoration: none; }
+.marca span { color: var(--ambar); }
+.hero { display: grid; gap: 36px; align-items: center; padding: 18px 0 56px; }
+.etiqueta { display: inline-block; color: var(--ambar); font-weight: 700; font-size: 13px; letter-spacing: 1.4px; text-transform: uppercase; }
+h1 { font-weight: 800; font-size: clamp(44px, 9vw, 72px); line-height: 1.02; letter-spacing: -2px; margin: 10px 0 14px; }
+.sub { font-size: 19px; color: var(--suave); margin: 0 0 26px; max-width: 30em; }
+.botoes { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 26px; border-radius: 999px; font-weight: 800; font-size: 17px; text-decoration: none; }
+.btn.principal { background: var(--azul); color: var(--creme); }
+.btn.secundario { border: 2px solid var(--azul); }
+.btn:focus-visible { outline: 3px solid var(--ambar); outline-offset: 3px; }
+.ecras { display: flex; gap: 14px; justify-content: center; }
+.ecras img { width: 31%; max-width: 230px; height: auto; border-radius: 22px; box-shadow: 0 1px 0 var(--linha), 0 12px 30px rgba(23, 50, 77, .14); background: #fff; }
+.ecras img:nth-child(2) { transform: translateY(-18px); }
+section { padding: 52px 0; border-top: 1px solid var(--linha); }
+h2 { font-weight: 800; font-size: clamp(28px, 5vw, 38px); letter-spacing: -1px; line-height: 1.1; margin: 0 0 26px; }
+.grelha { display: grid; gap: 14px; }
+.cartao { background: #fff; border: 1px solid var(--linha); border-radius: 18px; padding: 20px 22px; }
+.cartao h3 { margin: 0 0 4px; font-size: 18px; font-weight: 800; }
+.cartao p { margin: 0; color: var(--suave); }
+.passos { display: grid; gap: 14px; }
+.passos ol { margin: 10px 0 0; padding-left: 22px; }
+.passos li { margin: 6px 0; }
+.qr { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+.qr img { width: 168px; height: 168px; border-radius: 14px; border: 1px solid var(--linha); background: #fff; padding: 8px; }
+.qr p { max-width: 26em; margin: 0; color: var(--suave); }
+.nota { color: var(--suave); font-size: 15px; max-width: 46em; }
+footer { padding: 28px 0 44px; border-top: 1px solid var(--linha); color: var(--suave); font-size: 14px; display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; }
+@media (min-width: 760px) {
+  .hero { grid-template-columns: 1.05fr 1fr; padding-top: 36px; }
+  .grelha { grid-template-columns: repeat(3, 1fr); }
+  .passos { grid-template-columns: 1fr 1fr; }
+}
+@media (prefers-color-scheme: dark) {
+  :root { --creme: #0e1f31; --texto: #F7F5F0; --suave: #b9c3cd; --linha: #24384d; }
+  .btn.principal { background: var(--ambar); color: #0e1f31; }
+  .btn.secundario { border-color: #F7F5F0; }
+  .cartao { background: #132a41; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topo"><a class="marca" href="https://www.instagram.com/bem.contadopt/">bem<span>.</span>contado</a></header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <span class="etiqueta">App gratuita</span>
+        <h1>Poupança</h1>
+        <p class="sub">Organiza o dinheiro do dia a dia no telemóvel. Sem conta, sem anúncios, e os dados ficam só no teu telemóvel.</p>
+        <div class="botoes">
+          <a class="btn principal" href="../" data-contar="abrir-app">Abrir a app</a>
+          <a class="btn secundario" href="#instalar" data-contar="ver-instrucoes">Como instalar</a>
+        </div>
+      </div>
+      <div class="ecras">
+        <img src="img/inicio.webp" width="585" height="1266" alt="Ecrã inicial da Poupança com o dinheiro disponível para gastar, os objetivos e o registo rápido">
+        <img src="img/analise.webp" width="585" height="1266" alt="Análise do mês com receitas, despesas, resultado e taxa de poupança">
+        <img src="img/objetivos.webp" width="585" height="1266" alt="Objetivos de poupança com o valor já poupado e a poupança mensal necessária">
+      </div>
+    </div>
+
+    <section aria-labelledby="t-faz">
+      <h2 id="t-faz">O que a app faz</h2>
+      <div class="grelha">
+        <div class="cartao"><h3>Registo rápido</h3><p>Escreves «12,50 café» e o movimento fica registado.</p></div>
+        <div class="cartao"><h3>Contas e movimentos</h3><p>O saldo de cada conta, com receitas, despesas e transferências.</p></div>
+        <div class="cartao"><h3>Análise do mês</h3><p>Para onde vai o dinheiro, comparado com o mês anterior.</p></div>
+        <div class="cartao"><h3>Objetivos</h3><p>Quanto já tens, quanto falta e quanto precisas de poupar por mês.</p></div>
+        <div class="cartao"><h3>Desafio do dia</h3><p>Uma ideia nova todos os dias para gastar menos.</p></div>
+        <div class="cartao"><h3>IRS e Excel</h3><p>Faturas organizadas para o IRS e exportação para Excel.</p></div>
+      </div>
+    </section>
+
+    <section id="instalar" aria-labelledby="t-instalar">
+      <h2 id="t-instalar">Como instalar</h2>
+      <div class="passos">
+        <div class="cartao"><h3>iPhone</h3>
+          <ol>
+            <li>Abre <b>poupanca.bemcontadopt.pt</b> no <b>Safari</b>.</li>
+            <li>Toca em <b>Partilhar</b> (o quadrado com a seta para cima).</li>
+            <li>Escolhe <b>Adicionar ao ecrã principal</b>.</li>
+          </ol>
+        </div>
+        <div class="cartao"><h3>Android</h3>
+          <ol>
+            <li>Abre <b>poupanca.bemcontadopt.pt</b> no <b>Chrome</b>.</li>
+            <li>Toca nos três pontos (⋮).</li>
+            <li>Escolhe <b>Instalar aplicação</b> (ou <b>Adicionar ao ecrã principal</b>).</li>
+          </ol>
+        </div>
+      </div>
+      <div class="qr" style="margin-top:26px">
+        <img src="qr.svg" width="168" height="168" alt="Código QR para abrir poupanca.bemcontadopt.pt/instalar">
+        <p>Estás no computador? Aponta a câmara do telemóvel para este código e segue os passos acima.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-priv">
+      <h2 id="t-priv">Privacidade</h2>
+      <p class="nota">Os dados que registas nunca saem do telemóvel: não há servidor nem conta. Por isso, faz uma cópia de segurança de vez em quando (⚙️ Definições, Cópia de segurança). Esta página e a app contam, de forma anónima e sem cookies, as visitas e as instalações (contador GoatCounter), para sabermos quantas pessoas a usam.</p>
+      <p class="nota">A Poupança é uma app pessoal e gratuita. Não é aconselhamento financeiro.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span><b>bem.contado</b></span>
+    <a href="https://www.instagram.com/bem.contadopt/">Instagram @bem.contadopt</a>
+  </footer>
+</div>
+<script src="contador.js"></script>
+</body>
+</html>

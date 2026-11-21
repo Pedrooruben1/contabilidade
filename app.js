@@ -97,7 +97,7 @@ const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const cents = x => Math.round(x * 100);
 // As mesmas regras que a app aplica ao abrir os dados (normalize): só datas reais entre 1900 e 2200.
 const dataValida = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); if (!m) return false; const y = +m[1], mo = +m[2], d = +m[3]; return y >= 1900 && y <= 2200 && mo >= 1 && mo <= 12 && d >= 1 && d <= new Date(Date.UTC(y, mo, 0)).getUTCDate(); };
-const VERSION = 'v27';
+const VERSION = 'v28';
 const fmtEur = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' });
 // Modo privado: valores escondidos; só aparecem enquanto manténs o dedo premido no olho.
 // Assim, ao sair da app (e o iOS tirar a imagem do seletor de apps) nunca há valores à vista.
@@ -550,6 +550,7 @@ function settingsForm() {
   <h3 class="dh">Faturas e Excel</h3><div class="card"><button class="btn" data-act="faturas" style="width:100%">🧾 Faturas para o IRS</button><button class="btn" data-act="export-csv" style="width:100%;margin-top:8px">Exportar movimentos para Excel (CSV)</button><p class="sub" style="margin:8px 0 0">O ficheiro do Excel serve para consultar. Para guardar os dados, usa a cópia de segurança.</p></div>
   <h3 class="dh">Desafio do dia</h3><div class="card"><div class="between"><div><b>Desafio do dia</b><div class="sub">Uma pequena ação por dia no Início. Muda todos os dias.</div></div><button class="btn ${desafiosOn() ? 'main' : ''}" data-act="desafios-toggle" style="flex:none;padding:8px 14px">${desafiosOn() ? 'Ligado' : 'Desligado'}</button></div></div>
   <h3 class="dh">Ajuda</h3><div class="card"><button class="btn" data-act="welcome" style="width:100%">Ver as boas-vindas e as dicas</button></div>
+  <p class="note" style="margin:10px 4px 0">Privacidade: os teus dados ficam só neste telemóvel. A app envia apenas um sinal anónimo quando é instalada e aberta pela primeira vez (contador GoatCounter, sem cookies), para sabermos quantas pessoas a usam.</p>
   <div class="actionbar"><div class="btns"><button class="btn main" data-act="cancel">Fechar</button></div></div>`);
 }
 // Se as Definições estiverem abertas, volta a desenhá-las (depois de exportar, importar, mudar o PIN, ...).
@@ -988,13 +989,30 @@ function welcome() {
   openSheet(`${art('boasvindas', 'wart')}<h2>Bem-vindo à Poupança</h2><p class="sub" style="text-align:center;margin:-6px 0 8px">Para organizar o dinheiro do dia a dia, sem complicações.</p>
   <div class="wl"><span>🏦</span><div><b>Começa por uma conta.</b> Em <i>Contas</i>, cria uma conta com o saldo que tens hoje; depois o saldo muda com os movimentos. Para o acertar, edita o «saldo inicial» da conta. Transferências entre contas não contam como despesa.</div></div>
   <div class="wl"><span>⚡</span><div><b>Regista depressa.</b> Na página inicial, escreve «12,50 café» e confirma.</div></div>
-  <div class="wl"><span>💾</span><div><b>Os dados ficam só neste telemóvel.</b> Não há servidor nem conta. Se apagares a app ou mudares de telemóvel sem exportar, perdes tudo. Exporta uma cópia todos os meses (⚙️ Definições → Cópia de segurança).</div></div>
+  <div class="wl"><span>💾</span><div><b>Os dados ficam só neste telemóvel.</b> Não há servidor nem conta: a app só conta, sem saber quem és, quantas vezes é instalada. Se apagares a app ou mudares de telemóvel sem exportar, perdes tudo. Exporta uma cópia todos os meses (⚙️ Definições → Cópia de segurança).</div></div>
   <div class="wl"><span>👁️</span><div><b>Modo privado.</b> Os valores estão escondidos (••••). Mantém o dedo premido no olho para os ver.</div></div>
   ${install ? `<div class="wl"><span>📲</span><div><b>Instalar.</b> ${install}</div></div>` : ''}
   <div class="wl"><span>⚠️</span><div><b>Uma app pessoal.</b> Não é aconselhamento financeiro nem tem segurança profissional. O PIN só bloqueia o ecrã. Não guardes aqui palavras-passe nem números de cartões.</div></div>
   <button class="btn main" data-act="welcome-close" style="width:100%;margin:16px 0 8px">Começar</button><p class="assin">bem.contado</p>`);
 }
 const needsWelcome = () => { try { return corruptRaw === null && !localStorage.getItem(WELCOME_KEY) && !db.accounts.length && !db.entries.length; } catch (e) { return false; } };
+
+// ---------- v28: contagem anónima de instalações ----------
+// Só no endereço oficial. Envia apenas o nome do evento (sem cookies, sem dados da app) para o GoatCounter da bem.contado.
+// Eventos: «instalada» (o browser avisa que a app foi instalada; Android e computador) e «primeira-abertura»
+// (primeira vez que a app abre a partir do ecrã principal neste telemóvel; é o número que serve também para o iPhone).
+const CONTAGEM_HOST = 'poupanca.bemcontadopt.pt', CONTAGEM_URL = 'https://bemcontadopt.goatcounter.com/count', CONTAGEM_KEY = 'contabilidade-contagem';
+function contar(evento) {
+  if (location.hostname !== CONTAGEM_HOST) return false;
+  try { const i = new Image(); i.src = `${CONTAGEM_URL}?p=${encodeURIComponent('/app/' + evento)}&t=${encodeURIComponent(evento)}&e=true&rnd=${Math.random().toString(36).slice(2)}`; return true; } catch (e) { return false; }
+}
+window.addEventListener('appinstalled', () => contar('instalada'));
+(() => {
+  const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+  if (!standalone || location.hostname !== CONTAGEM_HOST) return;
+  try { if (localStorage.getItem(CONTAGEM_KEY)) return; localStorage.setItem(CONTAGEM_KEY, '1'); } catch (e) { return; }
+  contar('primeira-abertura');
+})();
 
 // ---------- PIN ----------
 const PINKEY = 'contabilidade-pin', LOCKKEY = 'contabilidade-lockuntil', PINLEN = 6;
